@@ -16,26 +16,21 @@
     if (isset($_SESSION["admin"])) {
         if ($_SESSION["admin"] == true) {
             if (isset($_GET['noemp'])) {
-                $bdd = mysqli_init();
-                mysqli_real_connect($bdd, "127.0.0.1", "root", "", "emp_serv");
-                $result = mysqli_query($bdd, "SELECT noemp, nom, prenom, emploi, sup, noserv, embauche, sal, comm FROM employes");
-                $donnees = mysqli_fetch_all($result);
-                mysqli_free_result($result);
-                mysqli_close($bdd);
-                $i = 0;
-                while ($i < count($donnees)) {
-                    if ($_GET['noemp'] == $donnees[$i][0]) {
-                        $preselec_noemp = $donnees[$i][0];
-                        $preselec_nom = $donnees[$i][1];
-                        $preselec_prenom = $donnees[$i][2];
-                        $preselec_emploi = $donnees[$i][3];
-                        $preselec_sup = $donnees[$i][4];
-                        $preselec_noserv = $donnees[$i][5];
-                        $preselec_embauche = $donnees[$i][6];
-                        $preselec_sal = $donnees[$i][7];
-                        $preselec_comm = $donnees[$i][8];
+                $displayEmp = "SELECT noemp, nom, prenom, emploi, sup, noserv, embauche, sal, comm FROM employes";
+                $dataDisplayEmp = requestBDD($displayEmp);
+
+                for ($i = 0; $i < count($dataDisplayEmp); $i++) {
+                    if ($_GET['noemp'] == $dataDisplayEmp[$i][0]) {
+                        $preselec_noemp = $dataDisplayEmp[$i][0];
+                        $preselec_nom = $dataDisplayEmp[$i][1];
+                        $preselec_prenom = $dataDisplayEmp[$i][2];
+                        $preselec_emploi = $dataDisplayEmp[$i][3];
+                        $preselec_sup = $dataDisplayEmp[$i][4];
+                        $preselec_noserv = $dataDisplayEmp[$i][5];
+                        $preselec_embauche = $dataDisplayEmp[$i][6];
+                        $preselec_sal = $dataDisplayEmp[$i][7];
+                        $preselec_comm = $dataDisplayEmp[$i][8];
                     }
-                    $i++;
                 }
     ?>
                 <div class='container-fluid'>
@@ -96,20 +91,15 @@
             }
 
             if (isset($_GET['noserv'])) {
-                $bdd = mysqli_init();
-                mysqli_real_connect($bdd, "127.0.0.1", "root", "", "emp_serv");
-                $result = mysqli_query($bdd, "SELECT * FROM services");
-                $donnees = mysqli_fetch_all($result);
-                mysqli_free_result($result);
-                mysqli_close($bdd);
-                $i = 0;
-                while ($i < count($donnees)) {
-                    if ($_GET['noserv'] == $donnees[$i][0]) {
-                        $preselec_noserv = $donnees[$i][0];
-                        $preselec_service = $donnees[$i][1];
-                        $preselec_ville = $donnees[$i][2];
+                $displayServ = "SELECT * FROM services";
+                $dataDisplayServ = requestBDD($displayServ);
+
+                for ($i = 0; $i < count($dataDisplayServ); $i++) {
+                    if ($_GET['noserv'] == $dataDisplayServ[$i][0]) {
+                        $preselec_noserv = $dataDisplayServ[$i][0];
+                        $preselec_service = $dataDisplayServ[$i][1];
+                        $preselec_ville = $dataDisplayServ[$i][2];
                     }
-                    $i++;
                 }
             ?>
                 <div class='container-fluid'>
@@ -143,6 +133,24 @@
         }
     } else {
         header("location:emp_serv.php");
+    }
+    ?>
+
+    <?php
+    // FONCTIONS
+    function requestBDD($requete)
+    {
+        $bdd = mysqli_init();
+        mysqli_real_connect($bdd, "127.0.0.1", "admin", "admin", "emp_serv");
+        $result = mysqli_query($bdd, $requete);
+        if (preg_match("#^SELECT#i", $requete)) {
+            $data = mysqli_fetch_all($result);
+            mysqli_free_result($result);
+            mysqli_close($bdd);
+            return $data;
+        } else {
+            mysqli_close($bdd);
+        }
     }
     ?>
 

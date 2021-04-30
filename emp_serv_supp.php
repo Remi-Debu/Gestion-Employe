@@ -18,38 +18,30 @@
             if (isset($_GET['noemp'])) {
                 if (isset($_POST["noemp"])) {
                     $noemp = $_POST["noemp"];
-
-                    $bdd = mysqli_init();
-                    mysqli_real_connect($bdd, "127.0.0.1", "root", "", "emp_serv");
-                    mysqli_query($bdd, "DELETE FROM employes WHERE noemp = $noemp");
-                    mysqli_close($bdd);
+                    $deleteEmp = "DELETE FROM employes WHERE noemp = $noemp";
+                    requestBDD($deleteEmp);
                     header("Location: emp_serv.php");
                 }
 
-                $bdd = mysqli_init();
-                mysqli_real_connect($bdd, "127.0.0.1", "root", "", "emp_serv");
-                $result = mysqli_query($bdd, "SELECT e.noemp, e.nom, e.prenom, e.emploi, DATE_FORMAT(e.embauche,'%d/%m/%Y'), e.sup, e.noserv, s.service, concat(e2.nom, ' ', e2.prenom) 
-                                      FROM employes e 
-                                      INNER JOIN services s ON e.noserv = s.noserv 
-                                      INNER JOIN employes e2 ON e.sup = e2.noemp OR e.sup IS NULL
-                                      GROUP BY noemp");
-                $donnees = mysqli_fetch_all($result);
-                mysqli_free_result($result);
-                mysqli_close($bdd);
-                $i = 0;
-                while ($i < count($donnees)) {
-                    if ($_GET['noemp'] == $donnees[$i][0]) {
-                        $preselec_noemp = $donnees[$i][0];
-                        $preselec_nom = $donnees[$i][1];
-                        $preselec_prenom = $donnees[$i][2];
-                        $preselec_emploi = $donnees[$i][3];
-                        $preselec_embauche = $donnees[$i][4];
-                        $preselec_sup = $donnees[$i][5];
-                        $preselec_noserv = $donnees[$i][6];
-                        $preselec_serv = $donnees[$i][7];
-                        $preselec_superieur = $donnees[$i][8];
+                $displayEmp = "SELECT e.noemp, e.nom, e.prenom, e.emploi, DATE_FORMAT(e.embauche,'%d/%m/%Y'), e.sup, e.noserv, s.service, concat(e2.nom, ' ', e2.prenom) 
+                               FROM employes e 
+                               INNER JOIN services s ON e.noserv = s.noserv 
+                               INNER JOIN employes e2 ON e.sup = e2.noemp OR e.sup IS NULL
+                               GROUP BY noemp";
+                $dataDisplayEmp = requestBDD($displayEmp);
+
+                for ($i = 0; $i < count($dataDisplayEmp); $i++) {
+                    if ($_GET['noemp'] == $dataDisplayEmp[$i][0]) {
+                        $preselec_noemp = $dataDisplayEmp[$i][0];
+                        $preselec_nom = $dataDisplayEmp[$i][1];
+                        $preselec_prenom = $dataDisplayEmp[$i][2];
+                        $preselec_emploi = $dataDisplayEmp[$i][3];
+                        $preselec_embauche = $dataDisplayEmp[$i][4];
+                        $preselec_sup = $dataDisplayEmp[$i][5];
+                        $preselec_noserv = $dataDisplayEmp[$i][6];
+                        $preselec_serv = $dataDisplayEmp[$i][7];
+                        $preselec_superieur = $dataDisplayEmp[$i][8];
                     }
-                    $i++;
                 }
     ?>
                 <div class='container-fluid'>
@@ -105,28 +97,20 @@
             if (isset($_GET['noserv'])) {
                 if (isset($_POST["noserv"])) {
                     $noserv = $_POST["noserv"];
-
-                    $bdd = mysqli_init();
-                    mysqli_real_connect($bdd, "127.0.0.1", "root", "", "emp_serv");
-                    mysqli_query($bdd, "DELETE FROM services WHERE noserv = $noserv");
-                    mysqli_close($bdd);
+                    $deleteServ = "DELETE FROM services WHERE noserv = $noserv";
+                    requestBDD($deleteServ);
                     header("Location: emp_serv.php");
                 }
 
-                $bdd = mysqli_init();
-                mysqli_real_connect($bdd, "127.0.0.1", "root", "", "emp_serv");
-                $result = mysqli_query($bdd, "SELECT * FROM services");
-                $donnees = mysqli_fetch_all($result);
-                mysqli_free_result($result);
-                mysqli_close($bdd);
-                $i = 0;
-                while ($i < count($donnees)) {
-                    if ($_GET['noserv'] == $donnees[$i][0]) {
-                        $preselec_noserv = $donnees[$i][0];
-                        $preselec_service = $donnees[$i][1];
-                        $preselec_ville = $donnees[$i][2];
+                $displayServ = "SELECT * FROM services";
+                $dataDisplayServ = requestBDD($displayServ);
+
+                for ($i = 0; $i < count($dataDisplayServ); $i++) {
+                    if ($_GET['noserv'] == $dataDisplayServ[$i][0]) {
+                        $preselec_noserv = $dataDisplayServ[$i][0];
+                        $preselec_service = $dataDisplayServ[$i][1];
+                        $preselec_ville = $dataDisplayServ[$i][2];
                     }
-                    $i++;
                 }
             ?>
                 <div class='container-fluid'>
@@ -165,6 +149,24 @@
         }
     } else {
         header("location:emp_serv.php");
+    }
+    ?>
+
+    <?php
+    // FONCTIONS
+    function requestBDD($requete)
+    {
+        $bdd = mysqli_init();
+        mysqli_real_connect($bdd, "127.0.0.1", "admin", "admin", "emp_serv");
+        $result = mysqli_query($bdd, $requete);
+        if (preg_match("#^SELECT#i", $requete)) {
+            $data = mysqli_fetch_all($result);
+            mysqli_free_result($result);
+            mysqli_close($bdd);
+            return $data;
+        } else {
+            mysqli_close($bdd);
+        }
     }
     ?>
 </body>

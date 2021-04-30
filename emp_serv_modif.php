@@ -55,44 +55,40 @@
                         $sal = $_POST["sal"];
                         $comm = $_POST["comm"];
 
-                        $bdd = mysqli_init();
-                        mysqli_real_connect($bdd, "127.0.0.1", "root", "", "emp_serv");
-                        mysqli_query($bdd, "UPDATE employes SET noemp = $noemp, nom = '$nom', prenom = '$prenom', emploi = '$emploi', embauche = '$embauche', sal = $sal 
-                                    WHERE noemp = $noemp");
+                        $updateEmp = "UPDATE employes SET noemp = $noemp, nom = '$nom', prenom = '$prenom', emploi = '$emploi', embauche = '$embauche', sal = $sal WHERE noemp = $noemp";
+                        requestBDD($updateEmp);
+
                         if (isset($_POST["comm"])) {
-                            mysqli_query($bdd, "UPDATE employes SET comm = $comm WHERE noemp = $noemp");
+                            $updateComm = "UPDATE employes SET comm = $comm WHERE noemp = $noemp";
+                            requestBDD($updateComm);
                         } else {
                             $comm = NULL;
-                            mysqli_query($bdd, "UPDATE employes SET comm = $comm WHERE noemp = $noemp");
+                            $updateComm = "UPDATE employes SET comm = $comm WHERE noemp = $noemp";
+                            requestBDD($updateComm);
                         }
-                        mysqli_close($bdd);
                         header("Location: emp_serv.php");
                     }
                 }
-                $bdd = mysqli_init();
-                mysqli_real_connect($bdd, "127.0.0.1", "root", "", "emp_serv");
-                $result = mysqli_query($bdd, "SELECT e.noemp, e.nom, e.prenom, e.emploi, concat(e2.nom, ' ', e2.prenom) 'superieur', e.embauche, e.sal, e.comm, service, e.sup FROM employes e 
-                                      INNER JOIN services s ON e.noserv = s.noserv 
-                                      INNER JOIN employes e2 ON e.sup = e2.noemp OR e.sup IS NULL
-                                      GROUP BY noemp");
-                $donnees = mysqli_fetch_all($result);
-                mysqli_free_result($result);
-                mysqli_close($bdd);
-                $i = 0;
-                while ($i < count($donnees)) {
-                    if ($_GET['noemp'] == $donnees[$i][0]) {
-                        $preselec_noemp = $donnees[$i][0];
-                        $preselec_nom = $donnees[$i][1];
-                        $preselec_prenom = $donnees[$i][2];
-                        $preselec_emploi = $donnees[$i][3];
-                        $preselec_superieur = $donnees[$i][4];
-                        $preselec_embauche = $donnees[$i][5];
-                        $preselec_sal = $donnees[$i][6];
-                        $preselec_comm = $donnees[$i][7];
-                        $preselec_service = $donnees[$i][8];
-                        $preselec_sup = $donnees[$i][9];
+
+                $displayEmp = "SELECT e.noemp, e.nom, e.prenom, e.emploi, concat(e2.nom, ' ', e2.prenom) 'superieur', e.embauche, e.sal, e.comm, service, e.sup FROM employes e 
+                               INNER JOIN services s ON e.noserv = s.noserv 
+                               INNER JOIN employes e2 ON e.sup = e2.noemp OR e.sup IS NULL
+                               GROUP BY noemp";
+                $dataDisplayEmp = requestBDD($displayEmp);
+
+                for ($i = 0; $i < count($dataDisplayEmp); $i++) {
+                    if ($_GET['noemp'] == $dataDisplayEmp[$i][0]) {
+                        $preselec_noemp = $dataDisplayEmp[$i][0];
+                        $preselec_nom = $dataDisplayEmp[$i][1];
+                        $preselec_prenom = $dataDisplayEmp[$i][2];
+                        $preselec_emploi = $dataDisplayEmp[$i][3];
+                        $preselec_superieur = $dataDisplayEmp[$i][4];
+                        $preselec_embauche = $dataDisplayEmp[$i][5];
+                        $preselec_sal = $dataDisplayEmp[$i][6];
+                        $preselec_comm = $dataDisplayEmp[$i][7];
+                        $preselec_service = $dataDisplayEmp[$i][8];
+                        $preselec_sup = $dataDisplayEmp[$i][9];
                     }
-                    $i++;
                 }
     ?>
                 <div class='container-fluid'>
@@ -198,27 +194,20 @@
                         $service = $_POST["service"];
                         $ville = $_POST["ville"];
 
-                        $bdd = mysqli_init();
-                        mysqli_real_connect($bdd, "127.0.0.1", "root", "", "emp_serv");
-                        mysqli_query($bdd, "UPDATE services SET noserv = $noserv, service = '$service', ville = '$ville' WHERE noserv = $noserv");
-                        mysqli_close($bdd);
+                        $updateServ = "UPDATE services SET noserv = $noserv, service = '$service', ville = '$ville' WHERE noserv = $noserv";
+                        requestBDD($updateServ);
                         header("Location: emp_serv.php");
                     }
                 }
-                $bdd = mysqli_init();
-                mysqli_real_connect($bdd, "127.0.0.1", "root", "", "emp_serv");
-                $result = mysqli_query($bdd, "SELECT * FROM services");
-                $donnees = mysqli_fetch_all($result);
-                mysqli_free_result($result);
-                mysqli_close($bdd);
-                $i = 0;
-                while ($i < count($donnees)) {
-                    if ($_GET['noserv'] == $donnees[$i][0]) {
-                        $preselec_noserv = $donnees[$i][0];
-                        $preselec_service = $donnees[$i][1];
-                        $preselec_ville = $donnees[$i][2];
+                $displayServ = "SELECT * FROM services";
+                $dataDisplayServ = requestBDD($displayServ);
+
+                for ($i = 0; $i < count($dataDisplayServ); $i++) {
+                    if ($_GET['noserv'] == $dataDisplayServ[$i][0]) {
+                        $preselec_noserv = $dataDisplayServ[$i][0];
+                        $preselec_service = $dataDisplayServ[$i][1];
+                        $preselec_ville = $dataDisplayServ[$i][2];
                     }
-                    $i++;
                 }
             ?>
                 <div class='container-fluid'>
@@ -273,6 +262,24 @@
         }
     } else {
         header("location:emp_serv.php");
+    }
+    ?>
+
+    <?php
+    // FONCTIONS
+    function requestBDD($requete)
+    {
+        $bdd = mysqli_init();
+        mysqli_real_connect($bdd, "127.0.0.1", "admin", "admin", "emp_serv");
+        $result = mysqli_query($bdd, $requete);
+        if (preg_match("#^SELECT#i", $requete)) {
+            $data = mysqli_fetch_all($result);
+            mysqli_free_result($result);
+            mysqli_close($bdd);
+            return $data;
+        } else {
+            mysqli_close($bdd);
+        }
     }
     ?>
 </body>

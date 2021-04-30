@@ -11,69 +11,19 @@
 </head>
 
 <body>
-
     <?php
     // GESTION DES POSTS
     $erreur_insc = false;
     $erreur_co = false;
     if (!empty($_POST)) {
-        if (isset($_POST["sinscrire"]) || isset($_POST["login"])) {
-            if (!isset($_POST["ident"]) || empty($_POST["ident"]) || !preg_match("#^[A-Za-z0-9]{5,20}$#", $_POST["ident"])) {
-                $erreur_insc = true;
-            }
-            if (!isset($_POST["mdp"]) || empty($_POST["mdp"]) || !preg_match("#^[A-Za-z0-9-_@./]{5,20}$#", $_POST["mdp"])) {
-                $erreur_insc = true;
-            }
-            if (!isset($_POST["confmdp"]) || empty($_POST["confmdp"]) || $_POST["confmdp"] != $_POST["mdp"]) {
-                $erreur_insc = true;
-            }
-            if (!isset($_POST["accepte"]) || empty($_POST["accepte"])) {
-                $erreur_insc = true;
-            }
-            if ($erreur_insc == false) {
-                $identifiant = $_POST['ident'];
-                $mdp = $_POST['mdp'];
-                $hashed_mdp = password_hash($mdp, PASSWORD_DEFAULT);
-
-                $bdd = mysqli_init();
-                mysqli_real_connect($bdd, "127.0.0.1", "admin", "admin", "emp_serv");
-                mysqli_query($bdd, "INSERT INTO utilisateurs (nom, mdp) VALUES ('$identifiant', '$hashed_mdp')");
-                mysqli_close($bdd);
-                header("Location: emp_serv.php");
-            }
+        if (isset($_POST["sinscrire"])) {
+            $erreur_insc = inscription();
         }
         if (isset($_POST["seconnecter"])) {
-            if (!isset($_POST["ident"]) || empty($_POST["ident"])) {
-                $erreur_co = true;
-            }
-            if (!isset($_POST["mdp"]) || empty($_POST["mdp"])) {
-                $erreur_co = true;
-            }
-            if ($erreur_co == false) {
-                $identifiant = $_POST['ident'];
-                $mdp = $_POST['mdp'];
-
-                $bdd = mysqli_init();
-                mysqli_real_connect($bdd, "127.0.0.1", "admin", "admin", "emp_serv");
-                $result = mysqli_query($bdd, "SELECT * FROM utilisateurs WHERE nom = '$identifiant'");
-                $data = mysqli_fetch_all($result);
-                mysqli_free_result($result);
-                mysqli_close($bdd);
-                if (isset($data[0][2])) {
-                    $verif_data = $data[0][2];
-                    $verif_mdp = password_verify($mdp, $verif_data);
-
-                    if ($verif_mdp == true) {
-                        session_start();
-                        $_SESSION["ident"] = $identifiant;
-                        $_SESSION["admin"] = $data[0][3];
-                    } else {
-                        $erreur_co = true;
-                    }
-                } else {
-                    $erreur_co = true;
-                }
-            }
+            $erreur_co = connexion();
+        }
+        if (isset($_POST["deconnexion"])) {
+            deconnexion();
         }
     }
     ?>
@@ -96,7 +46,9 @@
                             echo "<div class='display_ident'>" . $_SESSION['ident'] . "</div>";
                         ?>
                             <div class="button_deco">
-                                <a class="button_deco" href="emp_serv_deco.php"><button type="button" class="btn btn-primary">Déconnexion</button></a>
+                                <form action="" method="POST">
+                                    <input type="submit" class="btn btn-primary" style="margin:0;margin-bottom:6px;" name="deconnexion" value="Déconnexion">
+                                </form>
                             </div>
                         <?php
                         } else {
@@ -189,21 +141,17 @@
     if (isset($_SESSION["admin"])) {
 
         // PARTIE EMPLOYÉS
-        $bdd = mysqli_init();
-        mysqli_real_connect($bdd, "127.0.0.1", "root", "", "emp_serv");
-        $result = mysqli_query($bdd, "SELECT e.noemp, e.nom, e.prenom, e.emploi, concat(e2.nom, ' ', e2.prenom) AS 'nom sup', e.noserv, s.service, e.sup FROM employes AS e
-                                      INNER JOIN services AS s on e.noserv = s.noserv
-                                      INNER JOIN employes AS e2 on e.sup = e2.noemp OR e.sup IS NULL
-                                      GROUP BY noemp ORDER BY e.noserv, e.noemp ASC");
-        $donnees = mysqli_fetch_all($result);
-        mysqli_free_result($result);
-        $result2 = mysqli_query($bdd, "SELECT e2.noemp from employes e INNER JOIN employes e2 on e.sup = e2.noemp GROUP BY e2.noemp");
-        $donnees2 = mysqli_fetch_all($result2);
-        mysqli_free_result($result2);
-        $result3 = mysqli_query($bdd, "SELECT s.noserv FROM services s INNER JOIN employes e ON s.noserv = e.noserv GROUP BY s.noserv");
-        $donnees3 = mysqli_fetch_all($result3);
-        mysqli_free_result($result3);
-        mysqli_close($bdd);
+        $displayEmp = "SELECT e.noemp, e.nom, e.prenom, e.emploi, concat(e2.nom, ' ', e2.prenom) AS 'nom sup', e.noserv, s.service, e.sup FROM employes AS e
+              INNER JOIN services AS s on e.noserv = s.noserv
+              INNER JOIN employes AS e2 on e.sup = e2.noemp OR e.sup IS NULL
+              GROUP BY noemp ORDER BY e.noserv, e.noemp ASC";
+        $dataDisplayEmp = requestBDD($displayEmp);
+
+        $b = "SELECT e2.noemp from employes e INNER JOIN employes e2 on e.sup = e2.noemp GROUP BY e2.noemp";
+        $dataB = requestBDD($b);
+
+        $c = "SELECT s.noserv FROM services s INNER JOIN employes e ON s.noserv = e.noserv GROUP BY s.noserv";
+        $dataC = requestBDD($c);
     ?>
 
         <div class="container-fluid">
@@ -223,13 +171,9 @@
                                 ?>
                                 <span class="counter">
                                     <?php
-                                    $bdd = mysqli_init();
-                                    mysqli_real_connect($bdd, "127.0.0.1", "root", "", "emp_serv");
-                                    $result = mysqli_query($bdd, "SELECT COUNT(*) FROM employes WHERE ajout = DATE_FORMAT(SYSDATE(), '%Y-%m-%d')");
-                                    $data = mysqli_fetch_all($result);
-                                    mysqli_free_result($result);
-                                    mysqli_close($bdd);
-                                    echo $data[0][0];
+                                    $addCounterEmp = "SELECT COUNT(*) FROM employes WHERE ajout = DATE_FORMAT(SYSDATE(), '%Y-%m-%d')";
+                                    $dataAddCounterEmp = requestBDD($addCounterEmp);
+                                    echo $dataAddCounterEmp[0][0];
                                     ?>
                                 </span>
                             </legend>
@@ -253,26 +197,25 @@
                             </thead>
 
                             <?php
-                            $i = 0;
-                            while ($i < count($donnees)) {
+                            for ($i = 0; $i < count($dataDisplayEmp); $i++) {
                                 $displayRemove = false;
-                                if ($donnees[$i][7] == NULL) {
-                                    $donnees[$i][4] = "═════════";
+                                if ($dataDisplayEmp[$i][7] == NULL) {
+                                    $dataDisplayEmp[$i][4] = "═════════";
                                 }
-                                $get_noemp = $donnees[$i][0];
-                                echo "<tr><td>" . $donnees[$i][1] . "</td>";
-                                echo "<td>" . $donnees[$i][2] . "</td>";
-                                echo "<td>" . $donnees[$i][3] . "</td>";
-                                echo "<td>" . $donnees[$i][4] . "</td>";
-                                echo "<td>" . $donnees[$i][5] . "</td>";
-                                echo "<td>" . $donnees[$i][6] . "</td>";
+                                $get_noemp = $dataDisplayEmp[$i][0];
+                                echo "<tr><td>" . $dataDisplayEmp[$i][1] . "</td>";
+                                echo "<td>" . $dataDisplayEmp[$i][2] . "</td>";
+                                echo "<td>" . $dataDisplayEmp[$i][3] . "</td>";
+                                echo "<td>" . $dataDisplayEmp[$i][4] . "</td>";
+                                echo "<td>" . $dataDisplayEmp[$i][5] . "</td>";
+                                echo "<td>" . $dataDisplayEmp[$i][6] . "</td>";
                                 if (isset($_SESSION["admin"])) {
                                     if ($_SESSION["admin"] == "Y") {
                                         echo "<td><a href='emp_serv_details.php?noemp=$get_noemp'><button class='btn btn-info btn-sm'>Détails</button></a></td>";
                                         echo "<td><a href='emp_serv_modif.php?noemp=$get_noemp'><button class='btn btn-warning btn-sm'>Modifier</button></a></td>";
 
-                                        for ($j = 0; $j < count($donnees2); $j++) {
-                                            if ($donnees[$i][0] == $donnees2[$j][0]) {
+                                        for ($j = 0; $j < count($dataB); $j++) {
+                                            if ($dataDisplayEmp[$i][0] == $dataB[$j][0]) {
                                                 $displayRemove = true;
                                             }
                                         }
@@ -287,7 +230,6 @@
                                 } else {
                                     echo "</tr>";
                                 }
-                                $i++;
                             }
                             ?>
                         </table>
@@ -296,12 +238,8 @@
 
                 <?php
                 // PARTIE SERVICES
-                $bdd = mysqli_init();
-                mysqli_real_connect($bdd, "127.0.0.1", "root", "", "emp_serv");
-                $result = mysqli_query($bdd, "SELECT * FROM services");
-                $donnees = mysqli_fetch_all($result);
-                mysqli_free_result($result);
-                mysqli_close($bdd);
+                $services = "SELECT * FROM services";
+                $dataServices = requestBDD($services);
                 ?>
 
                 <div class="col-lg-5">
@@ -319,13 +257,9 @@
                                 ?>
                                 <span class="counter">
                                     <?php
-                                    $bdd = mysqli_init();
-                                    mysqli_real_connect($bdd, "127.0.0.1", "root", "", "emp_serv");
-                                    $result = mysqli_query($bdd, "SELECT COUNT(*) FROM services WHERE ajout = DATE_FORMAT(SYSDATE(), '%Y-%m-%d')");
-                                    $data = mysqli_fetch_all($result);
-                                    mysqli_free_result($result);
-                                    mysqli_close($bdd);
-                                    echo $data[0][0];
+                                    $addCounterServ = "SELECT COUNT(*) FROM services WHERE ajout = DATE_FORMAT(SYSDATE(), '%Y-%m-%d')";
+                                    $dataAddCounterServ = requestBDD($addCounterServ);
+                                    echo $dataAddCounterServ[0][0];
                                     ?>
                                 </span>
                             </legend>
@@ -346,20 +280,19 @@
                             </thead>
 
                             <?php
-                            $i = 0;
-                            while ($i < count($donnees)) {
+                            for ($i = 0; $i < count($dataServices); $i++) {
                                 $displayRemove = false;
-                                $get_noserv = $donnees[$i][0];
-                                echo "<tr><td>" . $donnees[$i][0] . "</td>";
-                                echo "<td>" . $donnees[$i][1] . "</td>";
-                                echo "<td>" . $donnees[$i][2] . "</td>";
+                                $get_noserv = $dataServices[$i][0];
+                                echo "<tr><td>" . $dataServices[$i][0] . "</td>";
+                                echo "<td>" . $dataServices[$i][1] . "</td>";
+                                echo "<td>" . $dataServices[$i][2] . "</td>";
 
                                 if (isset($_SESSION["admin"])) {
                                     if ($_SESSION["admin"] == "Y") {
                                         echo "<td><a href='emp_serv_details.php?noserv=$get_noserv'><button class='btn btn-info btn-sm'>Détails</button></a></td>";
                                         echo "<td><a href='emp_serv_modif.php?noserv=$get_noserv'><button class='btn btn-warning btn-sm'>Modifier</button></a></td>";
-                                        for ($j = 0; $j < count($donnees3); $j++) {
-                                            if ($donnees[$i][0] == $donnees3[$j][0]) {
+                                        for ($j = 0; $j < count($dataC); $j++) {
+                                            if ($dataServices[$i][0] == $dataC[$j][0]) {
                                                 $displayRemove = true;
                                             }
                                         }
@@ -374,7 +307,6 @@
                                 } else {
                                     echo "</tr>";
                                 }
-                                $i++;
                             }
                             ?>
                         </table>
@@ -397,6 +329,93 @@
     ?>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
+
+    <?php
+    // FONCTIONS
+    function requestBDD($requete)
+    {
+        $bdd = mysqli_init();
+        mysqli_real_connect($bdd, "127.0.0.1", "admin", "admin", "emp_serv");
+        $result = mysqli_query($bdd, $requete);
+        if (preg_match("#^SELECT#i", $requete)) {
+            $data = mysqli_fetch_all($result);
+            mysqli_free_result($result);
+            mysqli_close($bdd);
+            return $data;
+        } else {
+            mysqli_close($bdd);
+        }
+    }
+
+    function inscription(): bool
+    {
+        $erreur_insc = false;
+        if (!isset($_POST["ident"]) || empty($_POST["ident"]) || !preg_match("#^[A-Za-z0-9]{5,20}$#", $_POST["ident"])) {
+            $erreur_insc = true;
+        }
+        if (!isset($_POST["mdp"]) || empty($_POST["mdp"]) || !preg_match("#^[A-Za-z0-9-_@./]{5,20}$#", $_POST["mdp"])) {
+            $erreur_insc = true;
+        }
+        if (!isset($_POST["confmdp"]) || empty($_POST["confmdp"]) || $_POST["confmdp"] != $_POST["mdp"]) {
+            $erreur_insc = true;
+        }
+        if (!isset($_POST["accepte"]) || empty($_POST["accepte"])) {
+            $erreur_insc = true;
+        }
+        if ($erreur_insc == false) {
+            $identifiant = $_POST['ident'];
+            $mdp = $_POST['mdp'];
+            $hashed_mdp = password_hash($mdp, PASSWORD_DEFAULT);
+
+            $insertUser = "INSERT INTO utilisateurs (nom, mdp) VALUES ('$identifiant', '$hashed_mdp')";
+            requestBDD($insertUser);
+        }
+        return $erreur_insc;
+    }
+
+    function connexion(): bool
+    {
+        $erreur_co = false;
+        if (!isset($_POST["ident"]) || empty($_POST["ident"])) {
+            $erreur_co = true;
+        }
+        if (!isset($_POST["mdp"]) || empty($_POST["mdp"])) {
+            $erreur_co = true;
+        }
+        if ($erreur_co == false) {
+            $identifiant = $_POST['ident'];
+            $mdp = $_POST['mdp'];
+
+            $displayUser = "SELECT * FROM utilisateurs WHERE nom = '$identifiant'";
+            $data = requestBDD($displayUser);
+
+            if (isset($data[0][2])) {
+                $verif_data = $data[0][2];
+                $verif_mdp = password_verify($mdp, $verif_data);
+
+                if ($verif_mdp == true) {
+                    session_start();
+                    $_SESSION["ident"] = $identifiant;
+                    $_SESSION["admin"] = $data[0][3];
+                } else {
+                    $erreur_co = true;
+                }
+            } else {
+                $erreur_co = true;
+            }
+        }
+        return $erreur_co;
+    }
+
+    function deconnexion()
+    {
+        session_start();
+        session_destroy();
+        header("location:emp_serv.php");
+        exit();
+    }
+    ?>
+
 </body>
 
 </html>

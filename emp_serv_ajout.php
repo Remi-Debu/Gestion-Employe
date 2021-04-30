@@ -54,14 +54,11 @@
                         $erreur = true;
                         $message[] = "*Saisie Commission incorrecte";
                     }
-                    $bdd = mysqli_init();
-                    mysqli_real_connect($bdd, "127.0.0.1", "root", "", "emp_serv");
-                    $result = mysqli_query($bdd, "SELECT noemp from employes");
-                    $donnees = mysqli_fetch_all($result);
-                    mysqli_free_result($result);
-                    mysqli_close($bdd);
-                    for ($i = 0; $i < count($donnees); $i++) {
-                        if ($donnees[$i][0] == $_POST["noemp"]) {
+                    $selectNoemp = "SELECT noemp from employes";
+                    $dataSelectNoemp = requestBDD($selectNoemp);
+
+                    for ($i = 0; $i < count($dataSelectNoemp); $i++) {
+                        if ($dataSelectNoemp[$i][0] == $_POST["noemp"]) {
                             $erreur = true;
                             $message[] = "*Erreur N° Employé existant";
                         }
@@ -77,34 +74,33 @@
                         $sup = $_POST["sup"];
                         $comm = $_POST["comm"];
 
-                        $bdd = mysqli_init();
-                        mysqli_real_connect($bdd, "127.0.0.1", "root", "", "emp_serv");
-                        $result = mysqli_query($bdd, "SELECT DATE_FORMAT(SYSDATE(), '%Y-%m-%d')");
-                        $data = mysqli_fetch_all($result);
-                        mysqli_free_result($result);
-                        $ajout = $data[0][0];
-                        mysqli_query($bdd, "INSERT INTO employes (noemp, nom, prenom, emploi, embauche, sal, noserv, ajout) 
-                                    VALUES ($noemp, '$nom', '$prenom', '$emploi', '$embauche', $sal, $noserv, '$ajout')");
+                        $todaySelect = "SELECT DATE_FORMAT(SYSDATE(), '%Y-%m-%d')";
+                        $dataTodaySelect = requestBDD($todaySelect);
+                        $ajout = $dataTodaySelect[0][0];
+                        $insertEmp = "INSERT INTO employes (noemp, nom, prenom, emploi, embauche, sal, noserv, ajout) 
+                                      VALUES ($noemp, '$nom', '$prenom', '$emploi', '$embauche', $sal, $noserv, '$ajout')";
+                        requestBDD($insertEmp);
+
                         if (isset($_POST["sup"])) {
-                            $result = mysqli_query($bdd, "SELECT noemp from employes");
-                            $donnees = mysqli_fetch_all($result);
-                            mysqli_free_result($result);
-                            for ($i = 0; $i < count($donnees); $i++) {
-                                if ($donnees[$i][0] != $_POST["sup"]) {
-                                    mysqli_query($bdd, "UPDATE employes SET sup = $sup WHERE noemp = $noemp");
+                            for ($i = 0; $i < count($dataSelectNoemp); $i++) {
+                                if ($dataSelectNoemp[$i][0] != $_POST["sup"]) {
+                                    $updateSup = "UPDATE employes SET sup = $sup WHERE noemp = $noemp";
+                                    requestBDD($updateSup);
                                 }
                             }
                         } else {
                             $sup = NULL;
-                            mysqli_query($bdd, "UPDATE employes SET sup = $sup WHERE noemp = $noemp");
+                            $updateSup = "UPDATE employes SET sup = $sup WHERE noemp = $noemp";
+                            requestBDD($updateSup);
                         }
                         if (isset($_POST["comm"])) {
-                            mysqli_query($bdd, "UPDATE employes SET comm = $comm WHERE noemp = $noemp");
+                            $updateComm = "UPDATE employes SET comm = $comm WHERE noemp = $noemp";
+                            requestBDD($updateComm);
                         } else {
                             $comm = NULL;
-                            mysqli_query($bdd, "UPDATE employes SET comm = $comm WHERE noemp = $noemp");
+                            $updateComm = "UPDATE employes SET comm = $comm WHERE noemp = $noemp";
+                            requestBDD($updateComm);
                         }
-                        mysqli_close($bdd);
                         header("Location: emp_serv.php");
                     }
                 }
@@ -194,14 +190,12 @@
                         $erreur = true;
                         $message[] = "*Saisie Ville incorrecte";
                     }
-                    $bdd = mysqli_init();
-                    mysqli_real_connect($bdd, "127.0.0.1", "root", "", "emp_serv");
-                    $result = mysqli_query($bdd, "SELECT noserv from services");
-                    $donnees = mysqli_fetch_all($result);
-                    mysqli_free_result($result);
-                    mysqli_close($bdd);
-                    for ($i = 0; $i < count($donnees); $i++) {
-                        if ($donnees[$i][0] == $_POST["noserv"]) {
+
+                    $selectNoserv = "SELECT noserv from services";
+                    $dataSelectNoserv = requestBDD($selectNoserv);
+
+                    for ($i = 0; $i < count($dataSelectNoserv); $i++) {
+                        if ($dataSelectNoserv[$i][0] == $_POST["noserv"]) {
                             $erreur = true;
                             $message[] = "*Erreur N° Service existant";
                         }
@@ -211,15 +205,11 @@
                         $service = $_POST["service"];
                         $ville = $_POST["ville"];
 
-                        $bdd = mysqli_init();
-                        mysqli_real_connect($bdd, "127.0.0.1", "root", "", "emp_serv");
-                        $result = mysqli_query($bdd, "SELECT DATE_FORMAT(SYSDATE(), '%Y-%m-%d')");
-                        $data = mysqli_fetch_all($result);
-                        mysqli_free_result($result);
-                        $ajout = $data[0][0];
-                        mysqli_query($bdd, "INSERT INTO services (noserv, service, ville, ajout) VALUES ($noserv, '$service', '$ville', '$ajout')");
-                        mysqli_close($bdd);
-
+                        $todaySelect = "SELECT DATE_FORMAT(SYSDATE(), '%Y-%m-%d')";
+                        $dataTodaySelect = requestBDD($todaySelect);
+                        $ajout = $dataTodaySelect[0][0];
+                        $insertServ = "INSERT INTO services (noserv, service, ville, ajout) VALUES ($noserv, '$service', '$ville', '$ajout')";
+                        requestBDD($insertServ);
                         header("Location: emp_serv.php");
                     }
                 }
@@ -269,6 +259,24 @@
         }
     } else {
         header("location:emp_serv.php");
+    }
+    ?>
+
+    <?php
+    // FONCTIONS
+    function requestBDD($requete)
+    {
+        $bdd = mysqli_init();
+        mysqli_real_connect($bdd, "127.0.0.1", "admin", "admin", "emp_serv");
+        $result = mysqli_query($bdd, $requete);
+        if (preg_match("#^SELECT#i", $requete)) {
+            $data = mysqli_fetch_all($result);
+            mysqli_free_result($result);
+            mysqli_close($bdd);
+            return $data;
+        } else {
+            mysqli_close($bdd);
+        }
     }
     ?>
 </body>
