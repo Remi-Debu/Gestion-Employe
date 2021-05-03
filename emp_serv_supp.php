@@ -18,17 +18,11 @@
             if (isset($_GET['noemp'])) {
                 if (isset($_POST["noemp"])) {
                     $noemp = $_POST["noemp"];
-                    $deleteEmp = "DELETE FROM employes WHERE noemp = $noemp";
-                    requestBDD($deleteEmp);
+                    requestBddDeleteEmp($noemp);
                     header("Location: emp_serv.php");
                 }
 
-                $displayEmp = "SELECT e.noemp, e.nom, e.prenom, e.emploi, DATE_FORMAT(e.embauche,'%d/%m/%Y'), e.sup, e.noserv, s.service, concat(e2.nom, ' ', e2.prenom) 
-                               FROM employes e 
-                               INNER JOIN services s ON e.noserv = s.noserv 
-                               INNER JOIN employes e2 ON e.sup = e2.noemp OR e.sup IS NULL
-                               GROUP BY noemp";
-                $dataDisplayEmp = requestBDD($displayEmp);
+                $dataDisplayEmp = requestBddEmp();
 
                 for ($i = 0; $i < count($dataDisplayEmp); $i++) {
                     if ($_GET['noemp'] == $dataDisplayEmp[$i][0]) {
@@ -97,13 +91,11 @@
             if (isset($_GET['noserv'])) {
                 if (isset($_POST["noserv"])) {
                     $noserv = $_POST["noserv"];
-                    $deleteServ = "DELETE FROM services WHERE noserv = $noserv";
-                    requestBDD($deleteServ);
+                    requestBddDeleteServ($noserv);
                     header("Location: emp_serv.php");
                 }
 
-                $displayServ = "SELECT * FROM services";
-                $dataDisplayServ = requestBDD($displayServ);
+                $dataDisplayServ = requestBddServ();
 
                 for ($i = 0; $i < count($dataDisplayServ); $i++) {
                     if ($_GET['noserv'] == $dataDisplayServ[$i][0]) {
@@ -154,19 +146,50 @@
 
     <?php
     // FONCTIONS
-    function requestBDD($requete)
+    function requestBddDeleteEmp($noemp)
     {
-        $bdd = mysqli_init();
-        mysqli_real_connect($bdd, "127.0.0.1", "admin", "admin", "emp_serv");
-        $result = mysqli_query($bdd, $requete);
-        if (preg_match("#^SELECT#i", $requete)) {
-            $data = mysqli_fetch_all($result);
-            mysqli_free_result($result);
-            mysqli_close($bdd);
-            return $data;
-        } else {
-            mysqli_close($bdd);
-        }
+        $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
+        $stmt = $bdd->prepare("DELETE FROM employes WHERE noemp = ?");
+        $stmt->bind_param("i", $noemp);
+        $stmt->execute();
+        $bdd->close();
+    }
+
+    function requestBddEmp()
+    {
+        $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
+        $stmt = $bdd->prepare("SELECT e.noemp, e.nom, e.prenom, e.emploi, DATE_FORMAT(e.embauche,'%d/%m/%Y'), e.sup, e.noserv, s.service, concat(e2.nom, ' ', e2.prenom) 
+                               FROM employes e 
+                               INNER JOIN services s ON e.noserv = s.noserv 
+                               INNER JOIN employes e2 ON e.sup = e2.noemp OR e.sup IS NULL
+                               GROUP BY noemp");
+        $stmt->execute();
+        $rs = $stmt->get_result();
+        $data = $rs->fetch_all(MYSQLI_NUM);
+        $rs->free();
+        $bdd->close();
+        return $data;
+    }
+
+    function requestBddDeleteServ($noserv)
+    {
+        $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
+        $stmt = $bdd->prepare("DELETE FROM services WHERE noserv = ?");
+        $stmt->bind_param("i", $noserv);
+        $stmt->execute();
+        $bdd->close();
+    }
+
+    function requestBddServ()
+    {
+        $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
+        $stmt = $bdd->prepare("SELECT * FROM services");
+        $stmt->execute();
+        $rs = $stmt->get_result();
+        $data = $rs->fetch_all(MYSQLI_NUM);
+        $rs->free();
+        $bdd->close();
+        return $data;
     }
     ?>
 </body>

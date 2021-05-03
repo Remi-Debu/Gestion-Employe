@@ -141,17 +141,9 @@
     if (isset($_SESSION["admin"])) {
 
         // PARTIE EMPLOYÉS
-        $displayEmp = "SELECT e.noemp, e.nom, e.prenom, e.emploi, concat(e2.nom, ' ', e2.prenom) AS 'nom sup', e.noserv, s.service, e.sup FROM employes AS e
-              INNER JOIN services AS s on e.noserv = s.noserv
-              INNER JOIN employes AS e2 on e.sup = e2.noemp OR e.sup IS NULL
-              GROUP BY noemp ORDER BY e.noserv, e.noemp ASC";
-        $dataDisplayEmp = requestBDD($displayEmp);
-
-        $b = "SELECT e2.noemp from employes e INNER JOIN employes e2 on e.sup = e2.noemp GROUP BY e2.noemp";
-        $dataB = requestBDD($b);
-
-        $c = "SELECT s.noserv FROM services s INNER JOIN employes e ON s.noserv = e.noserv GROUP BY s.noserv";
-        $dataC = requestBDD($c);
+        $dataDisplayEmp = requestBDDDisplayEmp();
+        $dataB = requestBDD_B();
+        $dataC = requestBDD_C();
     ?>
 
         <div class="container-fluid">
@@ -171,8 +163,7 @@
                                 ?>
                                 <span class="counter">
                                     <?php
-                                    $addCounterEmp = "SELECT COUNT(*) FROM employes WHERE ajout = DATE_FORMAT(SYSDATE(), '%Y-%m-%d')";
-                                    $dataAddCounterEmp = requestBDD($addCounterEmp);
+                                    $dataAddCounterEmp = requestBDDCounterEmp();
                                     echo $dataAddCounterEmp[0][0];
                                     ?>
                                 </span>
@@ -238,8 +229,7 @@
 
                 <?php
                 // PARTIE SERVICES
-                $services = "SELECT * FROM services";
-                $dataServices = requestBDD($services);
+                $dataServices = requestBDDServ();
                 ?>
 
                 <div class="col-lg-5">
@@ -257,8 +247,7 @@
                                 ?>
                                 <span class="counter">
                                     <?php
-                                    $addCounterServ = "SELECT COUNT(*) FROM services WHERE ajout = DATE_FORMAT(SYSDATE(), '%Y-%m-%d')";
-                                    $dataAddCounterServ = requestBDD($addCounterServ);
+                                    $dataAddCounterServ = requestBDDCounterServ();
                                     echo $dataAddCounterServ[0][0];
                                     ?>
                                 </span>
@@ -332,19 +321,101 @@
 
     <?php
     // FONCTIONS
-    function requestBDD($requete)
+    function requestBDDInscription($identifiant, $hashed_mdp)
     {
-        $bdd = mysqli_init();
-        mysqli_real_connect($bdd, "127.0.0.1", "admin", "admin", "emp_serv");
-        $result = mysqli_query($bdd, $requete);
-        if (preg_match("#^SELECT#i", $requete)) {
-            $data = mysqli_fetch_all($result);
-            mysqli_free_result($result);
-            mysqli_close($bdd);
-            return $data;
-        } else {
-            mysqli_close($bdd);
-        }
+        $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
+        $stmt = $bdd->prepare("INSERT INTO utilisateurs (nom, mdp) VALUES (?, ?)");
+        $stmt->bind_param("ss", $identifiant, $hashed_mdp);
+        $stmt->execute();
+        $bdd->close();
+    }
+
+    function requestBDDConnexion($identifiant)
+    {
+        $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
+        $stmt = $bdd->prepare("SELECT * FROM utilisateurs WHERE nom = ?");
+        $stmt->bind_param("s", $identifiant);
+        $stmt->execute();
+        $rs = $stmt->get_result();
+        $data = $rs->fetch_all(MYSQLI_NUM);
+        $rs->free();
+        $bdd->close();
+        return $data;
+    }
+
+    function requestBDDDisplayEmp()
+    {
+        $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
+        $stmt = $bdd->prepare("SELECT e.noemp, e.nom, e.prenom, e.emploi, concat(e2.nom, ' ', e2.prenom) AS 'nom sup', e.noserv, s.service, e.sup FROM employes AS e
+                               INNER JOIN services AS s on e.noserv = s.noserv
+                               INNER JOIN employes AS e2 on e.sup = e2.noemp OR e.sup IS NULL
+                               GROUP BY noemp ORDER BY e.noserv, e.noemp ASC");
+        $stmt->execute();
+        $rs = $stmt->get_result();
+        $data = $rs->fetch_all(MYSQLI_NUM);
+        $rs->free();
+        $bdd->close();
+        return $data;
+    }
+
+    function requestBDD_B()
+    {
+        $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
+        $stmt = $bdd->prepare("SELECT e2.noemp from employes e INNER JOIN employes e2 on e.sup = e2.noemp GROUP BY e2.noemp");
+        $stmt->execute();
+        $rs = $stmt->get_result();
+        $data = $rs->fetch_all(MYSQLI_NUM);
+        $rs->free();
+        $bdd->close();
+        return $data;
+    }
+
+    function requestBDD_C()
+    {
+        $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
+        $stmt = $bdd->prepare("SELECT s.noserv FROM services s INNER JOIN employes e ON s.noserv = e.noserv GROUP BY s.noserv");
+        $stmt->execute();
+        $rs = $stmt->get_result();
+        $data = $rs->fetch_all(MYSQLI_NUM);
+        $rs->free();
+        $bdd->close();
+        return $data;
+    }
+
+    function requestBDDCounterEmp()
+    {
+        $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
+        $stmt = $bdd->prepare("SELECT COUNT(*) FROM employes WHERE ajout = DATE_FORMAT(SYSDATE(), '%Y-%m-%d')");
+        $stmt->execute();
+        $rs = $stmt->get_result();
+        $data = $rs->fetch_all(MYSQLI_NUM);
+        $rs->free();
+        $bdd->close();
+        return $data;
+    }
+
+    function requestBDDServ()
+    {
+        $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
+        $stmt = $bdd->prepare("SELECT * FROM services");
+        $stmt->execute();
+        $rs = $stmt->get_result();
+        $data = $rs->fetch_all(MYSQLI_NUM);
+        $rs->free();
+        $bdd->close();
+        return $data;
+    }
+
+    function requestBDDCounterServ()
+    {
+        $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
+        $stmt = $bdd->prepare("SELECT COUNT(*) FROM services WHERE ajout = DATE_FORMAT(SYSDATE(), '%Y-%m-%d')");
+        $stmt->execute();
+        $rs = $stmt->get_result();
+        $data = $rs->fetch_all(MYSQLI_NUM);
+        $rs->free();
+        $bdd->close();
+        return $data;
     }
 
     function inscription(): bool
@@ -367,8 +438,7 @@
             $mdp = $_POST['mdp'];
             $hashed_mdp = password_hash($mdp, PASSWORD_DEFAULT);
 
-            $insertUser = "INSERT INTO utilisateurs (nom, mdp) VALUES ('$identifiant', '$hashed_mdp')";
-            requestBDD($insertUser);
+            requestBDDInscription($identifiant, $hashed_mdp);
         }
         return $erreur_insc;
     }
@@ -386,8 +456,7 @@
             $identifiant = $_POST['ident'];
             $mdp = $_POST['mdp'];
 
-            $displayUser = "SELECT * FROM utilisateurs WHERE nom = '$identifiant'";
-            $data = requestBDD($displayUser);
+            $data = requestBDDConnexion($identifiant);
 
             if (isset($data[0][2])) {
                 $verif_data = $data[0][2];

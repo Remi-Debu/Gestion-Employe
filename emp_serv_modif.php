@@ -55,26 +55,19 @@
                         $sal = $_POST["sal"];
                         $comm = $_POST["comm"];
 
-                        $updateEmp = "UPDATE employes SET noemp = $noemp, nom = '$nom', prenom = '$prenom', emploi = '$emploi', embauche = '$embauche', sal = $sal WHERE noemp = $noemp";
-                        requestBDD($updateEmp);
+                        requestBddUpdateEmp($noemp, $nom, $prenom, $emploi, $embauche, $sal);
 
                         if (isset($_POST["comm"])) {
-                            $updateComm = "UPDATE employes SET comm = $comm WHERE noemp = $noemp";
-                            requestBDD($updateComm);
+                            requestBddUpdateComm($comm, $noemp);
                         } else {
                             $comm = NULL;
-                            $updateComm = "UPDATE employes SET comm = $comm WHERE noemp = $noemp";
-                            requestBDD($updateComm);
+                            requestBddUpdateComm($comm, $noemp);
                         }
                         header("Location: emp_serv.php");
                     }
                 }
 
-                $displayEmp = "SELECT e.noemp, e.nom, e.prenom, e.emploi, concat(e2.nom, ' ', e2.prenom) 'superieur', e.embauche, e.sal, e.comm, service, e.sup FROM employes e 
-                               INNER JOIN services s ON e.noserv = s.noserv 
-                               INNER JOIN employes e2 ON e.sup = e2.noemp OR e.sup IS NULL
-                               GROUP BY noemp";
-                $dataDisplayEmp = requestBDD($displayEmp);
+                $dataDisplayEmp = requestBddEmp();
 
                 for ($i = 0; $i < count($dataDisplayEmp); $i++) {
                     if ($_GET['noemp'] == $dataDisplayEmp[$i][0]) {
@@ -194,13 +187,11 @@
                         $service = $_POST["service"];
                         $ville = $_POST["ville"];
 
-                        $updateServ = "UPDATE services SET noserv = $noserv, service = '$service', ville = '$ville' WHERE noserv = $noserv";
-                        requestBDD($updateServ);
+                        requestBddUpdateServ($noserv, $service, $ville);
                         header("Location: emp_serv.php");
                     }
                 }
-                $displayServ = "SELECT * FROM services";
-                $dataDisplayServ = requestBDD($displayServ);
+                $dataDisplayServ = requestBddServ();
 
                 for ($i = 0; $i < count($dataDisplayServ); $i++) {
                     if ($_GET['noserv'] == $dataDisplayServ[$i][0]) {
@@ -267,19 +258,58 @@
 
     <?php
     // FONCTIONS
-    function requestBDD($requete)
+    function requestBddUpdateEmp($noemp, $nom, $prenom, $emploi, $embauche, $sal)
     {
-        $bdd = mysqli_init();
-        mysqli_real_connect($bdd, "127.0.0.1", "admin", "admin", "emp_serv");
-        $result = mysqli_query($bdd, $requete);
-        if (preg_match("#^SELECT#i", $requete)) {
-            $data = mysqli_fetch_all($result);
-            mysqli_free_result($result);
-            mysqli_close($bdd);
-            return $data;
-        } else {
-            mysqli_close($bdd);
-        }
+        $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
+        $stmt = $bdd->prepare("UPDATE employes SET noemp = ?, nom = ?, prenom = ?, emploi = ?, embauche = ?, sal = ? WHERE noemp = ?");
+        $stmt->bind_param("issssdi", $noemp, $nom, $prenom, $emploi, $embauche, $sal, $noemp);
+        $stmt->execute();
+        $bdd->close();
+    }
+
+    function requestBddUpdateComm($comm, $noemp)
+    {
+        $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
+        $stmt = $bdd->prepare("UPDATE employes SET comm = ? WHERE noemp = ?");
+        $stmt->bind_param("di", $comm, $noemp);
+        $stmt->execute();
+        $bdd->close();
+    }
+
+    function requestBddEmp()
+    {
+        $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
+        $stmt = $bdd->prepare("SELECT e.noemp, e.nom, e.prenom, e.emploi, concat(e2.nom, ' ', e2.prenom) 'superieur', e.embauche, e.sal, e.comm, service, e.sup FROM employes e 
+                               INNER JOIN services s ON e.noserv = s.noserv 
+                               INNER JOIN employes e2 ON e.sup = e2.noemp OR e.sup IS NULL
+                               GROUP BY noemp");
+        $stmt->execute();
+        $rs = $stmt->get_result();
+        $data = $rs->fetch_all(MYSQLI_NUM);
+        $rs->free();
+        $bdd->close();
+        return $data;
+    }
+
+    function requestBddUpdateServ($noserv, $service, $ville)
+    {
+        $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
+        $stmt = $bdd->prepare("UPDATE services SET noserv = ?, service = ?, ville = ? WHERE noserv = ?");
+        $stmt->bind_param("issi", $noserv, $service, $ville, $noserv);
+        $stmt->execute();
+        $bdd->close();
+    }
+
+    function requestBddServ()
+    {
+        $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
+        $stmt = $bdd->prepare("SELECT * FROM services");
+        $stmt->execute();
+        $rs = $stmt->get_result();
+        $data = $rs->fetch_all(MYSQLI_NUM);
+        $rs->free();
+        $bdd->close();
+        return $data;
     }
     ?>
 </body>

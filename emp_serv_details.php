@@ -16,8 +16,7 @@
     if (isset($_SESSION["admin"])) {
         if ($_SESSION["admin"] == true) {
             if (isset($_GET['noemp'])) {
-                $displayEmp = "SELECT noemp, nom, prenom, emploi, sup, noserv, embauche, sal, comm FROM employes";
-                $dataDisplayEmp = requestBDD($displayEmp);
+                $dataDisplayEmp = requestBddEmp();
 
                 for ($i = 0; $i < count($dataDisplayEmp); $i++) {
                     if ($_GET['noemp'] == $dataDisplayEmp[$i][0]) {
@@ -91,8 +90,7 @@
             }
 
             if (isset($_GET['noserv'])) {
-                $displayServ = "SELECT * FROM services";
-                $dataDisplayServ = requestBDD($displayServ);
+                $dataDisplayServ = requestBddServ();
 
                 for ($i = 0; $i < count($dataDisplayServ); $i++) {
                     if ($_GET['noserv'] == $dataDisplayServ[$i][0]) {
@@ -138,19 +136,28 @@
 
     <?php
     // FONCTIONS
-    function requestBDD($requete)
+    function requestBddEmp()
     {
-        $bdd = mysqli_init();
-        mysqli_real_connect($bdd, "127.0.0.1", "admin", "admin", "emp_serv");
-        $result = mysqli_query($bdd, $requete);
-        if (preg_match("#^SELECT#i", $requete)) {
-            $data = mysqli_fetch_all($result);
-            mysqli_free_result($result);
-            mysqli_close($bdd);
-            return $data;
-        } else {
-            mysqli_close($bdd);
-        }
+        $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
+        $stmt = $bdd->prepare("SELECT noemp, nom, prenom, emploi, sup, noserv, embauche, sal, comm FROM employes");
+        $stmt->execute();
+        $rs = $stmt->get_result();
+        $data = $rs->fetch_all(MYSQLI_NUM);
+        $rs->free();
+        $bdd->close();
+        return $data;
+    }
+
+    function requestBddServ()
+    {
+        $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
+        $stmt = $bdd->prepare("SELECT * FROM services");
+        $stmt->execute();
+        $rs = $stmt->get_result();
+        $data = $rs->fetch_all(MYSQLI_NUM);
+        $rs->free();
+        $bdd->close();
+        return $data;
     }
     ?>
 
