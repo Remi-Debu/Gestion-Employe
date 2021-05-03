@@ -261,7 +261,7 @@
     function requestBddUpdateEmp($noemp, $nom, $prenom, $emploi, $embauche, $sal)
     {
         $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
-        $stmt = $bdd->prepare("UPDATE employes SET noemp = ?, nom = ?, prenom = ?, emploi = ?, embauche = ?, sal = ? WHERE noemp = ?");
+        $stmt = $bdd->prepare("UPDATE employes SET noemp = ?, nom = ?, prenom = ?, emploi = ?, embauche = ?, sal = ? WHERE noemp = ?;");
         $stmt->bind_param("issssdi", $noemp, $nom, $prenom, $emploi, $embauche, $sal, $noemp);
         $stmt->execute();
         $bdd->close();
@@ -270,7 +270,7 @@
     function requestBddUpdateComm($comm, $noemp)
     {
         $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
-        $stmt = $bdd->prepare("UPDATE employes SET comm = ? WHERE noemp = ?");
+        $stmt = $bdd->prepare("UPDATE employes SET comm = ? WHERE noemp = ?;");
         $stmt->bind_param("di", $comm, $noemp);
         $stmt->execute();
         $bdd->close();
@@ -282,7 +282,7 @@
         $stmt = $bdd->prepare("SELECT e.noemp, e.nom, e.prenom, e.emploi, concat(e2.nom, ' ', e2.prenom) 'superieur', e.embauche, e.sal, e.comm, service, e.sup FROM employes e 
                                INNER JOIN services s ON e.noserv = s.noserv 
                                INNER JOIN employes e2 ON e.sup = e2.noemp OR e.sup IS NULL
-                               GROUP BY noemp");
+                               GROUP BY noemp;");
         $stmt->execute();
         $rs = $stmt->get_result();
         $data = $rs->fetch_all(MYSQLI_NUM);
@@ -294,7 +294,7 @@
     function requestBddUpdateServ($noserv, $service, $ville)
     {
         $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
-        $stmt = $bdd->prepare("UPDATE services SET noserv = ?, service = ?, ville = ? WHERE noserv = ?");
+        $stmt = $bdd->prepare("UPDATE services SET noserv = ?, service = ?, ville = ? WHERE noserv = ?;");
         $stmt->bind_param("issi", $noserv, $service, $ville, $noserv);
         $stmt->execute();
         $bdd->close();
@@ -303,7 +303,7 @@
     function requestBddServ()
     {
         $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
-        $stmt = $bdd->prepare("SELECT * FROM services");
+        $stmt = $bdd->prepare("SELECT * FROM services;");
         $stmt->execute();
         $rs = $stmt->get_result();
         $data = $rs->fetch_all(MYSQLI_NUM);

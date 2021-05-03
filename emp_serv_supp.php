@@ -149,7 +149,7 @@
     function requestBddDeleteEmp($noemp)
     {
         $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
-        $stmt = $bdd->prepare("DELETE FROM employes WHERE noemp = ?");
+        $stmt = $bdd->prepare("DELETE FROM employes WHERE noemp = ?;");
         $stmt->bind_param("i", $noemp);
         $stmt->execute();
         $bdd->close();
@@ -162,7 +162,7 @@
                                FROM employes e 
                                INNER JOIN services s ON e.noserv = s.noserv 
                                INNER JOIN employes e2 ON e.sup = e2.noemp OR e.sup IS NULL
-                               GROUP BY noemp");
+                               GROUP BY noemp;");
         $stmt->execute();
         $rs = $stmt->get_result();
         $data = $rs->fetch_all(MYSQLI_NUM);
@@ -174,7 +174,7 @@
     function requestBddDeleteServ($noserv)
     {
         $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
-        $stmt = $bdd->prepare("DELETE FROM services WHERE noserv = ?");
+        $stmt = $bdd->prepare("DELETE FROM services WHERE noserv = ?;");
         $stmt->bind_param("i", $noserv);
         $stmt->execute();
         $bdd->close();
@@ -183,7 +183,7 @@
     function requestBddServ()
     {
         $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
-        $stmt = $bdd->prepare("SELECT * FROM services");
+        $stmt = $bdd->prepare("SELECT * FROM services;");
         $stmt->execute();
         $rs = $stmt->get_result();
         $data = $rs->fetch_all(MYSQLI_NUM);

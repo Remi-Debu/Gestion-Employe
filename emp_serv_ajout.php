@@ -282,7 +282,7 @@
     {
         $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
         $stmt = $bdd->prepare("INSERT INTO employes (noemp, nom, prenom, emploi, embauche, sal, noserv, ajout) 
-                               VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+                               VALUES (?, ?, ?, ?, ?, ?, ?, ?);");
         $stmt->bind_param("issssdis", $noemp, $nom, $prenom, $emploi, $embauche, $sal, $noserv, $ajout);
         $stmt->execute();
         $bdd->close();
@@ -291,7 +291,7 @@
     function requestBddUpdateSup($sup, $noemp)
     {
         $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
-        $stmt = $bdd->prepare("UPDATE employes SET sup = ? WHERE noemp = ?");
+        $stmt = $bdd->prepare("UPDATE employes SET sup = ? WHERE noemp = ?;");
         $stmt->bind_param("ii", $sup, $noemp);
         $stmt->execute();
         $bdd->close();
@@ -300,7 +300,7 @@
     function requestBddUpdateComm($comm, $noemp)
     {
         $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
-        $stmt = $bdd->prepare("UPDATE employes SET comm = ? WHERE noemp = ?");
+        $stmt = $bdd->prepare("UPDATE employes SET comm = ? WHERE noemp = ?;");
         $stmt->bind_param("di", $comm, $noemp);
         $stmt->execute();
         $bdd->close();
@@ -309,7 +309,7 @@
     function requestBddServ()
     {
         $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
-        $stmt = $bdd->prepare("SELECT noserv from services");
+        $stmt = $bdd->prepare("SELECT noserv from services;");
         $stmt->execute();
         $rs = $stmt->get_result();
         $data = $rs->fetch_all(MYSQLI_NUM);
@@ -321,7 +321,7 @@
     function requestBddInsertServ($noserv, $service, $ville, $ajout)
     {
         $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
-        $stmt = $bdd->prepare("INSERT INTO services (noserv, service, ville, ajout) VALUES (?, ?, ?, ?)");
+        $stmt = $bdd->prepare("INSERT INTO services (noserv, service, ville, ajout) VALUES (?, ?, ?, ?);");
         $stmt->bind_param("isss", $noserv, $service, $ville, $ajout);
         $stmt->execute();
         $bdd->close();

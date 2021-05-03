@@ -324,7 +324,7 @@
     function requestBDDInscription($identifiant, $hashed_mdp)
     {
         $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
-        $stmt = $bdd->prepare("INSERT INTO utilisateurs (nom, mdp) VALUES (?, ?)");
+        $stmt = $bdd->prepare("INSERT INTO utilisateurs (nom, mdp) VALUES (?, ?);");
         $stmt->bind_param("ss", $identifiant, $hashed_mdp);
         $stmt->execute();
         $bdd->close();
@@ -333,7 +333,7 @@
     function requestBDDConnexion($identifiant)
     {
         $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
-        $stmt = $bdd->prepare("SELECT * FROM utilisateurs WHERE nom = ?");
+        $stmt = $bdd->prepare("SELECT * FROM utilisateurs WHERE nom = ?;");
         $stmt->bind_param("s", $identifiant);
         $stmt->execute();
         $rs = $stmt->get_result();
@@ -349,7 +349,7 @@
         $stmt = $bdd->prepare("SELECT e.noemp, e.nom, e.prenom, e.emploi, concat(e2.nom, ' ', e2.prenom) AS 'nom sup', e.noserv, s.service, e.sup FROM employes AS e
                                INNER JOIN services AS s on e.noserv = s.noserv
                                INNER JOIN employes AS e2 on e.sup = e2.noemp OR e.sup IS NULL
-                               GROUP BY noemp ORDER BY e.noserv, e.noemp ASC");
+                               GROUP BY noemp ORDER BY e.noserv, e.noemp ASC;");
         $stmt->execute();
         $rs = $stmt->get_result();
         $data = $rs->fetch_all(MYSQLI_NUM);
@@ -361,7 +361,7 @@
     function requestBDD_B()
     {
         $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
-        $stmt = $bdd->prepare("SELECT e2.noemp from employes e INNER JOIN employes e2 on e.sup = e2.noemp GROUP BY e2.noemp");
+        $stmt = $bdd->prepare("SELECT e2.noemp from employes e INNER JOIN employes e2 on e.sup = e2.noemp GROUP BY e2.noemp;");
         $stmt->execute();
         $rs = $stmt->get_result();
         $data = $rs->fetch_all(MYSQLI_NUM);
@@ -373,7 +373,7 @@
     function requestBDD_C()
     {
         $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
-        $stmt = $bdd->prepare("SELECT s.noserv FROM services s INNER JOIN employes e ON s.noserv = e.noserv GROUP BY s.noserv");
+        $stmt = $bdd->prepare("SELECT s.noserv FROM services s INNER JOIN employes e ON s.noserv = e.noserv GROUP BY s.noserv;");
         $stmt->execute();
         $rs = $stmt->get_result();
         $data = $rs->fetch_all(MYSQLI_NUM);
@@ -385,7 +385,7 @@
     function requestBDDCounterEmp()
     {
         $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
-        $stmt = $bdd->prepare("SELECT COUNT(*) FROM employes WHERE ajout = DATE_FORMAT(SYSDATE(), '%Y-%m-%d')");
+        $stmt = $bdd->prepare("SELECT COUNT(*) FROM employes WHERE ajout = DATE_FORMAT(SYSDATE(), '%Y-%m-%d');");
         $stmt->execute();
         $rs = $stmt->get_result();
         $data = $rs->fetch_all(MYSQLI_NUM);
@@ -397,7 +397,7 @@
     function requestBDDServ()
     {
         $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
-        $stmt = $bdd->prepare("SELECT * FROM services");
+        $stmt = $bdd->prepare("SELECT * FROM services;");
         $stmt->execute();
         $rs = $stmt->get_result();
         $data = $rs->fetch_all(MYSQLI_NUM);
@@ -409,7 +409,7 @@
     function requestBDDCounterServ()
     {
         $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
-        $stmt = $bdd->prepare("SELECT COUNT(*) FROM services WHERE ajout = DATE_FORMAT(SYSDATE(), '%Y-%m-%d')");
+        $stmt = $bdd->prepare("SELECT COUNT(*) FROM services WHERE ajout = DATE_FORMAT(SYSDATE(), '%Y-%m-%d');");
         $stmt->execute();
         $rs = $stmt->get_result();
         $data = $rs->fetch_all(MYSQLI_NUM);

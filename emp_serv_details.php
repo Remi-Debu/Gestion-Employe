@@ -139,7 +139,7 @@
     function requestBddEmp()
     {
         $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
-        $stmt = $bdd->prepare("SELECT noemp, nom, prenom, emploi, sup, noserv, embauche, sal, comm FROM employes");
+        $stmt = $bdd->prepare("SELECT noemp, nom, prenom, emploi, sup, noserv, embauche, sal, comm FROM employes;");
         $stmt->execute();
         $rs = $stmt->get_result();
         $data = $rs->fetch_all(MYSQLI_NUM);
@@ -151,7 +151,7 @@
     function requestBddServ()
     {
         $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
-        $stmt = $bdd->prepare("SELECT * FROM services");
+        $stmt = $bdd->prepare("SELECT * FROM services;");
         $stmt->execute();
         $rs = $stmt->get_result();
         $data = $rs->fetch_all(MYSQLI_NUM);
