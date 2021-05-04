@@ -12,6 +12,10 @@
 
 <body>
     <?php
+    include_once("DAO/EmployeDAO.php");
+    include_once("DAO/ServiceDAO.php");
+    include_once("DAO/UtilisateurDAO.php");
+
     // GESTION DES POSTS
     $erreur_insc = false;
     $erreur_co = false;
@@ -141,9 +145,9 @@
     if (isset($_SESSION["admin"])) {
 
         // PARTIE EMPLOYÉS
-        $dataDisplayEmp = requestBDDDisplayEmp();
-        $dataB = requestBDD_B();
-        $dataC = requestBDD_C();
+        $dataDisplayEmp = (new EmployeDAO())->displayEmp();
+        $dataSup = (new EmployeDAO())->sup();
+        $dataServWithEmp = (new ServiceDAO())->servWithEmp();
     ?>
 
         <div class="container-fluid">
@@ -163,7 +167,7 @@
                                 ?>
                                 <span class="counter">
                                     <?php
-                                    $dataAddCounterEmp = requestBDDCounterEmp();
+                                    $dataAddCounterEmp = (new EmployeDAO())->counterEmp();
                                     echo $dataAddCounterEmp[0][0];
                                     ?>
                                 </span>
@@ -205,8 +209,8 @@
                                         echo "<td><a href='emp_serv_details.php?noemp=$get_noemp'><button class='btn btn-info btn-sm'>Détails</button></a></td>";
                                         echo "<td><a href='emp_serv_modif.php?noemp=$get_noemp'><button class='btn btn-warning btn-sm'>Modifier</button></a></td>";
 
-                                        for ($j = 0; $j < count($dataB); $j++) {
-                                            if ($dataDisplayEmp[$i][0] == $dataB[$j][0]) {
+                                        for ($j = 0; $j < count($dataSup); $j++) {
+                                            if ($dataDisplayEmp[$i][0] == $dataSup[$j][0]) {
                                                 $displayRemove = true;
                                             }
                                         }
@@ -229,7 +233,7 @@
 
                 <?php
                 // PARTIE SERVICES
-                $dataServices = requestBDDServ();
+                $dataServices = (new ServiceDAO())->displayServ();
                 ?>
 
                 <div class="col-lg-5">
@@ -247,7 +251,7 @@
                                 ?>
                                 <span class="counter">
                                     <?php
-                                    $dataAddCounterServ = requestBDDCounterServ();
+                                    $dataAddCounterServ = (new ServiceDAO())->counterServ();
                                     echo $dataAddCounterServ[0][0];
                                     ?>
                                 </span>
@@ -280,8 +284,8 @@
                                     if ($_SESSION["admin"] == "Y") {
                                         echo "<td><a href='emp_serv_details.php?noserv=$get_noserv'><button class='btn btn-info btn-sm'>Détails</button></a></td>";
                                         echo "<td><a href='emp_serv_modif.php?noserv=$get_noserv'><button class='btn btn-warning btn-sm'>Modifier</button></a></td>";
-                                        for ($j = 0; $j < count($dataC); $j++) {
-                                            if ($dataServices[$i][0] == $dataC[$j][0]) {
+                                        for ($j = 0; $j < count($dataServWithEmp); $j++) {
+                                            if ($dataServices[$i][0] == $dataServWithEmp[$j][0]) {
                                                 $displayRemove = true;
                                             }
                                         }
@@ -321,103 +325,6 @@
 
     <?php
     // FONCTIONS
-    function requestBDDInscription($identifiant, $hashed_mdp)
-    {
-        $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
-        $stmt = $bdd->prepare("INSERT INTO utilisateurs (nom, mdp) VALUES (?, ?);");
-        $stmt->bind_param("ss", $identifiant, $hashed_mdp);
-        $stmt->execute();
-        $bdd->close();
-    }
-
-    function requestBDDConnexion($identifiant)
-    {
-        $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
-        $stmt = $bdd->prepare("SELECT * FROM utilisateurs WHERE nom = ?;");
-        $stmt->bind_param("s", $identifiant);
-        $stmt->execute();
-        $rs = $stmt->get_result();
-        $data = $rs->fetch_all(MYSQLI_NUM);
-        $rs->free();
-        $bdd->close();
-        return $data;
-    }
-
-    function requestBDDDisplayEmp()
-    {
-        $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
-        $stmt = $bdd->prepare("SELECT e.noemp, e.nom, e.prenom, e.emploi, concat(e2.nom, ' ', e2.prenom) AS 'nom sup', e.noserv, s.service, e.sup FROM employes AS e
-                               INNER JOIN services AS s on e.noserv = s.noserv
-                               INNER JOIN employes AS e2 on e.sup = e2.noemp OR e.sup IS NULL
-                               GROUP BY noemp ORDER BY e.noserv, e.noemp ASC;");
-        $stmt->execute();
-        $rs = $stmt->get_result();
-        $data = $rs->fetch_all(MYSQLI_NUM);
-        $rs->free();
-        $bdd->close();
-        return $data;
-    }
-
-    function requestBDD_B()
-    {
-        $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
-        $stmt = $bdd->prepare("SELECT e2.noemp from employes e INNER JOIN employes e2 on e.sup = e2.noemp GROUP BY e2.noemp;");
-        $stmt->execute();
-        $rs = $stmt->get_result();
-        $data = $rs->fetch_all(MYSQLI_NUM);
-        $rs->free();
-        $bdd->close();
-        return $data;
-    }
-
-    function requestBDD_C()
-    {
-        $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
-        $stmt = $bdd->prepare("SELECT s.noserv FROM services s INNER JOIN employes e ON s.noserv = e.noserv GROUP BY s.noserv;");
-        $stmt->execute();
-        $rs = $stmt->get_result();
-        $data = $rs->fetch_all(MYSQLI_NUM);
-        $rs->free();
-        $bdd->close();
-        return $data;
-    }
-
-    function requestBDDCounterEmp()
-    {
-        $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
-        $stmt = $bdd->prepare("SELECT COUNT(*) FROM employes WHERE ajout = DATE_FORMAT(SYSDATE(), '%Y-%m-%d');");
-        $stmt->execute();
-        $rs = $stmt->get_result();
-        $data = $rs->fetch_all(MYSQLI_NUM);
-        $rs->free();
-        $bdd->close();
-        return $data;
-    }
-
-    function requestBDDServ()
-    {
-        $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
-        $stmt = $bdd->prepare("SELECT * FROM services;");
-        $stmt->execute();
-        $rs = $stmt->get_result();
-        $data = $rs->fetch_all(MYSQLI_NUM);
-        $rs->free();
-        $bdd->close();
-        return $data;
-    }
-
-    function requestBDDCounterServ()
-    {
-        $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
-        $stmt = $bdd->prepare("SELECT COUNT(*) FROM services WHERE ajout = DATE_FORMAT(SYSDATE(), '%Y-%m-%d');");
-        $stmt->execute();
-        $rs = $stmt->get_result();
-        $data = $rs->fetch_all(MYSQLI_NUM);
-        $rs->free();
-        $bdd->close();
-        return $data;
-    }
-
     function inscription(): bool
     {
         $erreur_insc = false;
@@ -438,7 +345,7 @@
             $mdp = $_POST['mdp'];
             $hashed_mdp = password_hash($mdp, PASSWORD_DEFAULT);
 
-            requestBDDInscription($identifiant, $hashed_mdp);
+            (new UtilisateurDAO())->addUser($identifiant, $hashed_mdp);
         }
         return $erreur_insc;
     }
@@ -456,7 +363,7 @@
             $identifiant = $_POST['ident'];
             $mdp = $_POST['mdp'];
 
-            $data = requestBDDConnexion($identifiant);
+            $data = (new UtilisateurDAO)->selectUser($identifiant);
 
             if (isset($data[0][2])) {
                 $verif_data = $data[0][2];

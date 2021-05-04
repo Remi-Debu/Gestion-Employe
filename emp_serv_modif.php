@@ -12,6 +12,9 @@
 
 <body>
     <?php
+    include_once("DAO/EmployeDAO.php");
+    include_once("DAO/ServiceDAO.php");
+
     session_start();
     if (isset($_SESSION["admin"])) {
         if ($_SESSION["admin"] == true) {
@@ -47,27 +50,28 @@
                         $message[] = "*Saisie Commission incorrecte";
                     }
                     if ($erreur == false) {
-                        $noemp = $_POST["noemp"];
-                        $nom = $_POST["nom"];
-                        $prenom = $_POST["prenom"];
-                        $emploi = $_POST["emploi"];
-                        $embauche = $_POST["embauche"];
-                        $sal = $_POST["sal"];
-                        $comm = $_POST["comm"];
-
-                        requestBddUpdateEmp($noemp, $nom, $prenom, $emploi, $embauche, $sal);
+                        $employe = (new Employe())
+                            ->setNoemp($_POST["noemp"])
+                            ->setNom($_POST["nom"])
+                            ->setPrenom($_POST["prenom"])
+                            ->setEmploi($_POST["emploi"])
+                            ->setEmbauche($_POST["embauche"])
+                            ->setSal($_POST["sal"])
+                            ->setComm($_POST["comm"]);
+                            
+                        (new EmployeDAO())->updateEmp($employe);
 
                         if (isset($_POST["comm"])) {
-                            requestBddUpdateComm($comm, $noemp);
+                            (new EmployeDAO())->updateComm($employe);
                         } else {
                             $comm = NULL;
-                            requestBddUpdateComm($comm, $noemp);
+                            (new EmployeDAO())->updateComm($employe);
                         }
                         header("Location: emp_serv.php");
                     }
                 }
 
-                $dataDisplayEmp = requestBddEmp();
+                $dataDisplayEmp = (new EmployeDAO())->displayEmpModif();
 
                 for ($i = 0; $i < count($dataDisplayEmp); $i++) {
                     if ($_GET['noemp'] == $dataDisplayEmp[$i][0]) {
@@ -183,15 +187,12 @@
                         $message[] = "*Saisie Ville incorrecte";
                     }
                     if ($erreur == false) {
-                        $noserv = $_POST["noserv"];
-                        $service = $_POST["service"];
-                        $ville = $_POST["ville"];
-
-                        requestBddUpdateServ($noserv, $service, $ville);
+                        $service = (new Service())->setNoserv($_POST["noserv"])->setService($_POST["service"])->setVille($_POST["ville"]);
+                        (new ServiceDAO())->updateServ($service);
                         header("Location: emp_serv.php");
                     }
                 }
-                $dataDisplayServ = requestBddServ();
+                $dataDisplayServ = (new ServiceDAO())->displayServ();
 
                 for ($i = 0; $i < count($dataDisplayServ); $i++) {
                     if ($_GET['noserv'] == $dataDisplayServ[$i][0]) {
@@ -253,63 +254,6 @@
         }
     } else {
         header("location:emp_serv.php");
-    }
-    ?>
-
-    <?php
-    // FONCTIONS
-    function requestBddUpdateEmp($noemp, $nom, $prenom, $emploi, $embauche, $sal)
-    {
-        $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
-        $stmt = $bdd->prepare("UPDATE employes SET noemp = ?, nom = ?, prenom = ?, emploi = ?, embauche = ?, sal = ? WHERE noemp = ?;");
-        $stmt->bind_param("issssdi", $noemp, $nom, $prenom, $emploi, $embauche, $sal, $noemp);
-        $stmt->execute();
-        $bdd->close();
-    }
-
-    function requestBddUpdateComm($comm, $noemp)
-    {
-        $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
-        $stmt = $bdd->prepare("UPDATE employes SET comm = ? WHERE noemp = ?;");
-        $stmt->bind_param("di", $comm, $noemp);
-        $stmt->execute();
-        $bdd->close();
-    }
-
-    function requestBddEmp()
-    {
-        $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
-        $stmt = $bdd->prepare("SELECT e.noemp, e.nom, e.prenom, e.emploi, concat(e2.nom, ' ', e2.prenom) 'superieur', e.embauche, e.sal, e.comm, service, e.sup FROM employes e 
-                               INNER JOIN services s ON e.noserv = s.noserv 
-                               INNER JOIN employes e2 ON e.sup = e2.noemp OR e.sup IS NULL
-                               GROUP BY noemp;");
-        $stmt->execute();
-        $rs = $stmt->get_result();
-        $data = $rs->fetch_all(MYSQLI_NUM);
-        $rs->free();
-        $bdd->close();
-        return $data;
-    }
-
-    function requestBddUpdateServ($noserv, $service, $ville)
-    {
-        $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
-        $stmt = $bdd->prepare("UPDATE services SET noserv = ?, service = ?, ville = ? WHERE noserv = ?;");
-        $stmt->bind_param("issi", $noserv, $service, $ville, $noserv);
-        $stmt->execute();
-        $bdd->close();
-    }
-
-    function requestBddServ()
-    {
-        $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
-        $stmt = $bdd->prepare("SELECT * FROM services;");
-        $stmt->execute();
-        $rs = $stmt->get_result();
-        $data = $rs->fetch_all(MYSQLI_NUM);
-        $rs->free();
-        $bdd->close();
-        return $data;
     }
     ?>
 </body>

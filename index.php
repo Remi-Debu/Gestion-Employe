@@ -1,30 +1,18 @@
 <?php
-$a = "SELECT * from utilisateurs WHERE id = 12";
-$b = "UPDATE utilisateurs SET nom = 'Jules' WHERE id = 12";
+include_once("DAO/ServiceDAO.php");
+include_once("Model/Service.php");
 
-$bdd = mysqli_init();
-mysqli_real_connect($bdd, "127.0.0.1", "admin", "admin", "emp_serv");
-$result = mysqli_query($bdd, $b);
-if ($result != "bool(true)" || $result != "bool(false)") {
-    $data = mysqli_fetch_all($result);
-    mysqli_free_result($result);
-    echo "success";
-} else {
-    echo "Erraur";
+$bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
+$stmt = $bdd->prepare("SELECT * FROM services;");
+$stmt->execute();
+$rs = $stmt->get_result();
+$data = $rs->fetch_all(MYSQLI_NUM);
+
+foreach ($data as $key => $value) {
+    $services[$key] = (new Service())->setNoserv($data[$key][0])->setService($data[$key][1])->setVille($data[$key][2]);
 }
-mysqli_close($bdd);
 
-$bdd = mysqli_init();
-mysqli_real_connect($bdd, "127.0.0.1", "admin", "admin", "emp_serv");
-$result = mysqli_query($bdd, $a);
-if (preg_match("#^SELECT#i", $a)) {
-    $data = mysqli_fetch_all($result);
-    mysqli_free_result($result);
-    echo "success";
-} else {
-    echo "Erraur";
-}
-mysqli_close($bdd);
+$rs->free();
+$bdd->close();
 
-
-
+echo $services[7]->getNoserv();

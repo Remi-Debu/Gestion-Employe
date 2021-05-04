@@ -12,11 +12,14 @@
 
 <body>
     <?php
+    include_once("DAO/ServiceDAO.php");
+    include_once("DAO/EmployeDAO.php");
+
     session_start();
     if (isset($_SESSION["admin"])) {
         if ($_SESSION["admin"] == true) {
             if (isset($_GET['noemp'])) {
-                $dataDisplayEmp = requestBddEmp();
+                $dataDisplayEmp = (new EmployeDAO())->displayEmpDetails();
 
                 for ($i = 0; $i < count($dataDisplayEmp); $i++) {
                     if ($_GET['noemp'] == $dataDisplayEmp[$i][0]) {
@@ -90,8 +93,7 @@
             }
 
             if (isset($_GET['noserv'])) {
-                $dataDisplayServ = requestBddServ();
-
+                $dataDisplayServ = (new ServiceDAO())->displayServ();
                 for ($i = 0; $i < count($dataDisplayServ); $i++) {
                     if ($_GET['noserv'] == $dataDisplayServ[$i][0]) {
                         $preselec_noserv = $dataDisplayServ[$i][0];
@@ -133,34 +135,6 @@
         header("location:emp_serv.php");
     }
     ?>
-
-    <?php
-    // FONCTIONS
-    function requestBddEmp()
-    {
-        $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
-        $stmt = $bdd->prepare("SELECT noemp, nom, prenom, emploi, sup, noserv, embauche, sal, comm FROM employes;");
-        $stmt->execute();
-        $rs = $stmt->get_result();
-        $data = $rs->fetch_all(MYSQLI_NUM);
-        $rs->free();
-        $bdd->close();
-        return $data;
-    }
-
-    function requestBddServ()
-    {
-        $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
-        $stmt = $bdd->prepare("SELECT * FROM services;");
-        $stmt->execute();
-        $rs = $stmt->get_result();
-        $data = $rs->fetch_all(MYSQLI_NUM);
-        $rs->free();
-        $bdd->close();
-        return $data;
-    }
-    ?>
-
 </body>
 
 </html>
