@@ -105,7 +105,7 @@ class EmployeDAO
         $emploi = $employe->getEmploi();
         $embauche = $employe->getEmbauche();
         $sal = $employe->getSal();
-        $noserv = $employe->getNoserv();
+        $noserv = $employe->getService()->getNoserv();
         $ajout = $employe->getAjout();
 
 

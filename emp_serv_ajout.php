@@ -70,6 +70,8 @@
                         $dataTodaySelect = (new EmployeDAO())->selectToday();
                         $ajout = $dataTodaySelect[0][0];
 
+                        $service = (new Service())->setNoserv($_POST["noserv"]);
+
                         $employe = (new Employe())
                             ->setNoemp($_POST["noemp"])
                             ->setNom($_POST["nom"])
@@ -79,7 +81,7 @@
                             ->setSal($_POST["sal"])
                             ->setSup($_POST["sup"])
                             ->setComm($_POST["comm"])
-                            ->setNoserv($_POST["noserv"])
+                            ->setService($service)
                             ->setAjout($ajout);
 
                         (new EmployeDAO())->addEmp($employe);

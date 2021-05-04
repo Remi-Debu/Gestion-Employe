@@ -1,7 +1,5 @@
 <?php
-include_once("Model/Service.php");
-
-class Employe extends Service
+class Employe
 {
     private $noemp;
     private $nom;
@@ -12,7 +10,7 @@ class Employe extends Service
     private $sal;
     private $comm;
     private $ajout;
-    private $noserv;
+    private Service $service;
 
     /**
      * Get the value of noemp
@@ -195,21 +193,21 @@ class Employe extends Service
     }
 
     /**
-     * Get the value of noserv
-     */
-    public function getNoserv()
+     * Get the value of service
+     */ 
+    public function getService()
     {
-        return $this->noserv;
+        return $this->service;
     }
 
     /**
-     * Set the value of noserv
+     * Set the value of service
      *
      * @return  self
-     */
-    public function setNoserv($noserv)
+     */ 
+    public function setService($service)
     {
-        $this->noserv = $noserv;
+        $this->service = $service;
 
         return $this;
     }
