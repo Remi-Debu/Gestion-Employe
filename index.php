@@ -15,4 +15,6 @@ foreach ($data as $key => $value) {
 $rs->free();
 $bdd->close();
 
-echo $services[7]->getNoserv();
+foreach ($services as $key => $value) {
+    echo $services[$key]->getNoserv();
+}

@@ -1,9 +1,9 @@
 <?php
-include_once("Model/Employe.php");
+include_once(__DIR__ . "/../Model/Employe.php");
 
 class EmployeDAO
 {
-    function displayEmp(): array
+    public function displayEmp(): array
     {
         $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
         $stmt = $bdd->prepare("SELECT e.noemp, e.nom, e.prenom, e.emploi, concat(e2.nom, ' ', e2.prenom) AS 'nom sup', e.noserv, s.service, e.sup FROM employes AS e
@@ -18,7 +18,7 @@ class EmployeDAO
         return $data;
     }
 
-    function displayEmpDetails(): array
+    public function displayEmpDetails(): array
     {
         $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
         $stmt = $bdd->prepare("SELECT noemp, nom, prenom, emploi, sup, noserv, embauche, sal, comm FROM employes;");
@@ -30,7 +30,7 @@ class EmployeDAO
         return $data;
     }
 
-    function displayEmpModif(): array
+    public function displayEmpModif(): array
     {
         $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
         $stmt = $bdd->prepare("SELECT e.noemp, e.nom, e.prenom, e.emploi, concat(e2.nom, ' ', e2.prenom) 'superieur', e.embauche, e.sal, e.comm, service, e.sup FROM employes e 
@@ -45,7 +45,7 @@ class EmployeDAO
         return $data;
     }
 
-    function displayEmpSupp(): array
+    public function displayEmpSupp(): array
     {
         $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
         $stmt = $bdd->prepare("SELECT e.noemp, e.nom, e.prenom, e.emploi, DATE_FORMAT(e.embauche,'%d/%m/%Y'), e.sup, e.noserv, s.service, concat(e2.nom, ' ', e2.prenom) 
@@ -61,7 +61,7 @@ class EmployeDAO
         return $data;
     }
 
-    function selectToday(): array
+    public function selectToday(): array
     {
         $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
         $stmt = $bdd->prepare("SELECT DATE_FORMAT(SYSDATE(), '%Y-%m-%d')");
@@ -73,7 +73,7 @@ class EmployeDAO
         return $data;
     }
 
-    function sup(): array
+    public function sup(): array
     {
         $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
         $stmt = $bdd->prepare("SELECT DISTINCT sup from employes");
@@ -85,7 +85,7 @@ class EmployeDAO
         return $data;
     }
 
-    function counterEmp(): array
+    public function counterEmp(): array
     {
         $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
         $stmt = $bdd->prepare("SELECT COUNT(*) FROM employes WHERE ajout = DATE_FORMAT(SYSDATE(), '%Y-%m-%d');");
@@ -97,7 +97,7 @@ class EmployeDAO
         return $data;
     }
 
-    function addEmp(Employe $employe): void
+    public function addEmp(Employe $employe): void
     {
         $noemp = $employe->getNoemp();
         $nom = $employe->getNom();
@@ -117,7 +117,7 @@ class EmployeDAO
         $bdd->close();
     }
 
-    function updateEmp(Employe $employe): void
+    public function updateEmp(Employe $employe): void
     {
         $noemp = $employe->getNoemp();
         $nom = $employe->getNom();
@@ -134,7 +134,7 @@ class EmployeDAO
         $bdd->close();
     }
 
-    function updateSup(Employe $employe): void
+    public function updateSup(Employe $employe): void
     {
         $sup = $employe->getSup();
         $noemp = $employe->getNoemp();
@@ -146,7 +146,7 @@ class EmployeDAO
         $bdd->close();
     }
 
-    function updateComm(Employe $employe): void
+    public function updateComm(Employe $employe): void
     {
         $comm = $employe->getComm();
         $noemp = $employe->getNoemp();
@@ -158,7 +158,7 @@ class EmployeDAO
         $bdd->close();
     }
 
-    function deleteEmp(int $noemp): void
+    public function deleteEmp(int $noemp): void
     {
         $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
         $stmt = $bdd->prepare("DELETE FROM employes WHERE noemp = ?;");

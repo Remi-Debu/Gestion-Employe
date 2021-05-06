@@ -1,9 +1,9 @@
 <?php
-include_once("Model/Service.php");
+include_once(__DIR__ . "/../Model/Service.php");
 
 class ServiceDAO
 {
-    function displayServ(): array
+    public function displayServ(): array
     {
         $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
         $stmt = $bdd->prepare("SELECT * FROM services;");
@@ -15,7 +15,7 @@ class ServiceDAO
         return $data;
     }
 
-    function servWithEmp(): array
+    public function servWithEmp(): array
     {
         $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
         $stmt = $bdd->prepare("SELECT s.noserv FROM services s INNER JOIN employes e ON s.noserv = e.noserv GROUP BY s.noserv;");
@@ -27,7 +27,7 @@ class ServiceDAO
         return $data;
     }
 
-    function counterServ(): array
+    public function counterServ(): array
     {
         $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
         $stmt = $bdd->prepare("SELECT COUNT(*) FROM services WHERE ajout = DATE_FORMAT(SYSDATE(), '%Y-%m-%d');");
@@ -39,7 +39,7 @@ class ServiceDAO
         return $data;
     }
 
-    function addServ(Service $service): void
+    public function addServ(Service $service): void
     {
         $noserv = $service->getNoserv();
         $serv = $service->getService();
@@ -53,7 +53,7 @@ class ServiceDAO
         $bdd->close();
     }
 
-    function updateServ(Service $service): void
+    public function updateServ(Service $service): void
     {
         $noserv = $service->getNoserv();
         $serv = $service->getService();
@@ -67,7 +67,7 @@ class ServiceDAO
         $bdd->close();
     }
 
-    function deleteServ(int $noserv): void
+    public function deleteServ(int $noserv): void
     {
         $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
         $stmt = $bdd->prepare("DELETE FROM services WHERE noserv = ?;");

@@ -1,9 +1,9 @@
 <?php
-include_once("Model/Utilisateur.php");
+include_once(__DIR__ . "/../Model/Utilisateur.php");
 
 class UtilisateurDAO
 {
-    function addUser(string $identifiant, string $hashed_mdp) : void
+    public function addUser(string $identifiant, string $hashed_mdp) : void
     {
         $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
         $stmt = $bdd->prepare("INSERT INTO utilisateurs (nom, mdp) VALUES (?, ?);");
@@ -12,7 +12,7 @@ class UtilisateurDAO
         $bdd->close();
     }
 
-    function selectUser(string $identifiant) : array
+    public function selectUser(string $identifiant) : array
     {
         $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
         $stmt = $bdd->prepare("SELECT * FROM utilisateurs WHERE nom = ?;");
