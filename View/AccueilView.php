@@ -168,25 +168,25 @@ function afficherTableEmploye(array $dataDisplayEmp, array $dataSup): void
                             </thead>
 
                             <?php
-                            for ($i = 0; $i < count($dataDisplayEmp); $i++) {
+                            foreach ($dataDisplayEmp as $key => $value) {
                                 $displayRemove = false;
-                                if ($dataDisplayEmp[$i][7] == NULL) {
-                                    $dataDisplayEmp[$i][4] = "═════════";
+                                if ($dataDisplayEmp[$key][0]->getSup() == NULL) {
+                                    $dataDisplayEmp[$key][1] = "═════════";
                                 }
-                                $get_noemp = $dataDisplayEmp[$i][0];
-                                echo "<tr><td>" . $dataDisplayEmp[$i][1] . "</td>";
-                                echo "<td>" . $dataDisplayEmp[$i][2] . "</td>";
-                                echo "<td>" . $dataDisplayEmp[$i][3] . "</td>";
-                                echo "<td>" . $dataDisplayEmp[$i][4] . "</td>";
-                                echo "<td>" . $dataDisplayEmp[$i][5] . "</td>";
-                                echo "<td>" . $dataDisplayEmp[$i][6] . "</td>";
+                                $get_noemp = $dataDisplayEmp[$key][0]->getNoemp();
+                                echo "<tr><td>" . $dataDisplayEmp[$key][0]->getNom() . "</td>";
+                                echo "<td>" . $dataDisplayEmp[$key][0]->getPrenom() . "</td>";
+                                echo "<td>" . $dataDisplayEmp[$key][0]->getEmploi() . "</td>";
+                                echo "<td>" . $dataDisplayEmp[$key][1] . "</td>";
+                                echo "<td>" . $dataDisplayEmp[$key][0]->getService()->getNoserv() . "</td>";
+                                echo "<td>" . $dataDisplayEmp[$key][0]->getService()->getService() . "</td>";
                                 if (isset($_SESSION["admin"])) {
                                     if ($_SESSION["admin"] == "Y") {
                                         echo "<td><a href='DetailsController.php?noemp=$get_noemp'><button class='btn btn-info btn-sm'>Détails</button></a></td>";
                                         echo "<td><a href='ModifierController.php?noemp=$get_noemp'><button class='btn btn-warning btn-sm'>Modifier</button></a></td>";
 
                                         for ($j = 0; $j < count($dataSup); $j++) {
-                                            if ($dataDisplayEmp[$i][0] == $dataSup[$j][0]) {
+                                            if ($dataDisplayEmp[$key][0]->getNoemp() == $dataSup[$j][0]) {
                                                 $displayRemove = true;
                                             }
                                         }
@@ -214,7 +214,7 @@ function afficherTableEmploye(array $dataDisplayEmp, array $dataSup): void
 ?>
 
 <?php
-function afficherTableService(array $dataServices, array $dataServWithEmp): void
+function afficherTableService(array $dataService, array $dataServWithEmp): void
 {
 ?>
 
@@ -256,19 +256,19 @@ function afficherTableService(array $dataServices, array $dataServWithEmp): void
                     </thead>
 
                     <?php
-                    for ($i = 0; $i < count($dataServices); $i++) {
+                    foreach ($dataService as $key => $value) {
                         $displayRemove = false;
-                        $get_noserv = $dataServices[$i][0];
-                        echo "<tr><td>" . $dataServices[$i][0] . "</td>";
-                        echo "<td>" . $dataServices[$i][1] . "</td>";
-                        echo "<td>" . $dataServices[$i][2] . "</td>";
+                        $get_noserv = $dataService[$key]->getNoserv();
+                        echo "<tr><td>" . $dataService[$key]->getNoserv() . "</td>";
+                        echo "<td>" . $dataService[$key]->getService() . "</td>";
+                        echo "<td>" . $dataService[$key]->getVille() . "</td>";
 
                         if (isset($_SESSION["admin"])) {
                             if ($_SESSION["admin"] == "Y") {
                                 echo "<td><a href='DetailsController.php?noserv=$get_noserv'><button class='btn btn-info btn-sm'>Détails</button></a></td>";
                                 echo "<td><a href='ModifierController.php?noserv=$get_noserv'><button class='btn btn-warning btn-sm'>Modifier</button></a></td>";
                                 for ($j = 0; $j < count($dataServWithEmp); $j++) {
-                                    if ($dataServices[$i][0] == $dataServWithEmp[$j][0]) {
+                                    if ($dataService[$key]->getNoserv() == $dataServWithEmp[$j][0]) {
                                         $displayRemove = true;
                                     }
                                 }

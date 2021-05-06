@@ -12,36 +12,32 @@ if (isset($_SESSION["admin"])) {
     if ($_SESSION["admin"] == true) {
         if (isset($_GET['noemp'])) {
             $dataDisplayEmp = (new EmployeService())->displayEmpDetails();
-
-            for ($i = 0; $i < count($dataDisplayEmp); $i++) {
-                if ($_GET['noemp'] == $dataDisplayEmp[$i][0]) {
-                    $preselec_noemp = $dataDisplayEmp[$i][0];
-                    $preselec_nom = $dataDisplayEmp[$i][1];
-                    $preselec_prenom = $dataDisplayEmp[$i][2];
-                    $preselec_emploi = $dataDisplayEmp[$i][3];
-                    $preselec_sup = $dataDisplayEmp[$i][4];
-                    $preselec_noserv = $dataDisplayEmp[$i][5];
-                    $preselec_embauche = $dataDisplayEmp[$i][6];
-                    $preselec_sal = $dataDisplayEmp[$i][7];
-                    $preselec_comm = $dataDisplayEmp[$i][8];
+            foreach ($dataDisplayEmp as $key => $value) {
+                if ($_GET['noemp'] == $dataDisplayEmp[$key]->getNoemp()) {
+                    $preselec_noemp = $dataDisplayEmp[$key]->getNoemp();
+                    $preselec_nom = $dataDisplayEmp[$key]->getNom();
+                    $preselec_prenom = $dataDisplayEmp[$key]->getPrenom();
+                    $preselec_emploi = $dataDisplayEmp[$key]->getEmploi();
+                    $preselec_sup = $dataDisplayEmp[$key]->getSup();
+                    $preselec_noserv = $dataDisplayEmp[$key]->getService()->getNoserv();
+                    $preselec_embauche = $dataDisplayEmp[$key]->getEmbauche();
+                    $preselec_sal = $dataDisplayEmp[$key]->getSal();
+                    $preselec_comm = $dataDisplayEmp[$key]->getComm();
                 }
             }
-
             formulaireEmployeDetails($preselec_noemp, $preselec_sup, $preselec_nom, $preselec_prenom, $preselec_emploi, $preselec_embauche, $preselec_sal, $preselec_comm, $preselec_noserv);
         }
 
         if (isset($_GET['noserv'])) {
             $dataDisplayServ = (new ServiceService())->displayServ();
-            for ($i = 0; $i < count($dataDisplayServ); $i++) {
-                if ($_GET['noserv'] == $dataDisplayServ[$i][0]) {
-                    $preselec_noserv = $dataDisplayServ[$i][0];
-                    $preselec_service = $dataDisplayServ[$i][1];
-                    $preselec_ville = $dataDisplayServ[$i][2];
+            foreach ($dataDisplayServ as $key => $value) {
+                if ($_GET['noserv'] == $dataDisplayServ[$key]->getNoserv()) {
+                    $preselec_noserv = $dataDisplayServ[$key]->getNoserv();
+                    $preselec_service = $dataDisplayServ[$key]->getService();
+                    $preselec_ville = $dataDisplayServ[$key]->getVille();
                 }
             }
-
             formulaireServiceDetails($preselec_noserv, $preselec_service, $preselec_ville);
-
         }
     } else {
         header("location: /Controller/AccueilController.php");
@@ -49,4 +45,3 @@ if (isset($_SESSION["admin"])) {
 } else {
     header("location: /Controller/AccueilController.php");
 }
-?>

@@ -13,9 +13,19 @@ class EmployeDAO
         $stmt->execute();
         $rs = $stmt->get_result();
         $data = $rs->fetch_all(MYSQLI_NUM);
+        foreach ($data as $key => $value) {
+            $employe[$key][0] = (new Employe())
+                ->setNoemp($data[$key][0])
+                ->setNom($data[$key][1])
+                ->setPrenom($data[$key][2])
+                ->setEmploi($data[$key][3])
+                ->setService((new Service())->setNoserv($data[$key][5])->setService($data[$key][6]))
+                ->setSup($data[$key][7]);
+            $employe[$key][1] = $data[$key][4];
+        }
         $rs->free();
         $bdd->close();
-        return $data;
+        return $employe;
     }
 
     public function displayEmpDetails(): array
@@ -25,24 +35,49 @@ class EmployeDAO
         $stmt->execute();
         $rs = $stmt->get_result();
         $data = $rs->fetch_all(MYSQLI_NUM);
+        foreach ($data as $key => $value) {
+            $employe[$key] = (new Employe())
+                ->setNoemp($data[$key][0])
+                ->setNom($data[$key][1])
+                ->setPrenom($data[$key][2])
+                ->setEmploi($data[$key][3])
+                ->setSup($data[$key][4])
+                ->setService((new Service())->setNoserv($data[$key][5]))
+                ->setEmbauche($data[$key][6])
+                ->setSal($data[$key][7])
+                ->setComm($data[$key][8]);
+        }
         $rs->free();
         $bdd->close();
-        return $data;
+        return $employe;
     }
 
     public function displayEmpModif(): array
     {
         $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
-        $stmt = $bdd->prepare("SELECT e.noemp, e.nom, e.prenom, e.emploi, concat(e2.nom, ' ', e2.prenom) 'superieur', e.embauche, e.sal, e.comm, service, e.sup FROM employes e 
+        $stmt = $bdd->prepare("SELECT e.noemp, e.nom, e.prenom, e.emploi, concat(e2.nom, ' ', e2.prenom) 'superieur', e.embauche, e.sal, e.comm, s.service, e.sup FROM employes e 
                                INNER JOIN services s ON e.noserv = s.noserv 
                                INNER JOIN employes e2 ON e.sup = e2.noemp OR e.sup IS NULL
                                GROUP BY noemp;");
         $stmt->execute();
         $rs = $stmt->get_result();
         $data = $rs->fetch_all(MYSQLI_NUM);
+        foreach ($data as $key => $value) {
+            $employe[$key][0] = (new Employe())
+                ->setNoemp($data[$key][0])
+                ->setNom($data[$key][1])
+                ->setPrenom($data[$key][2])
+                ->setEmploi($data[$key][3])
+                ->setEmbauche($data[$key][5])
+                ->setSal($data[$key][6])
+                ->setComm($data[$key][7])
+                ->setService((new Service())->setService($data[$key][8]))
+                ->setSup($data[$key][9]);
+            $employe[$key][1] = $data[$key][4];
+        }
         $rs->free();
         $bdd->close();
-        return $data;
+        return $employe;
     }
 
     public function displayEmpSupp(): array
@@ -56,9 +91,20 @@ class EmployeDAO
         $stmt->execute();
         $rs = $stmt->get_result();
         $data = $rs->fetch_all(MYSQLI_NUM);
+        foreach ($data as $key => $value) {
+            $employe[$key][0] = (new Employe())
+                ->setNoemp($data[$key][0])
+                ->setNom($data[$key][1])
+                ->setPrenom($data[$key][2])
+                ->setEmploi($data[$key][3])
+                ->setEmbauche($data[$key][4])
+                ->setSup($data[$key][5])
+                ->setService((new Service())->setNoserv($data[$key][6])->setService($data[$key][7]));
+            $employe[$key][1] = $data[$key][8];
+        }
         $rs->free();
         $bdd->close();
-        return $data;
+        return $employe;
     }
 
     public function selectToday(): array

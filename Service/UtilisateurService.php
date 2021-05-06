@@ -18,7 +18,7 @@ class UtilisateurService
     public function session(string $identifiant, array $data): void
     {
         $_SESSION["ident"] = $identifiant;
-        $_SESSION["admin"] = $data[0][3];
+        $_SESSION["admin"] = $data[0]->getAdmin();
         (new Utilisateur())->setNom($_SESSION["ident"])->setAdmin($_SESSION["admin"]);
     }
 

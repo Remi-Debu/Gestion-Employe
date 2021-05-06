@@ -10,9 +10,16 @@ class ServiceDAO
         $stmt->execute();
         $rs = $stmt->get_result();
         $data = $rs->fetch_all(MYSQLI_NUM);
+        foreach ($data as $key => $value) {
+            $service[$key] = (new Service())
+                ->setNoserv($data[$key][0])
+                ->setService($data[$key][1])
+                ->setVille($data[$key][2])
+                ->setAjout($data[$key][3]);
+        }
         $rs->free();
         $bdd->close();
-        return $data;
+        return $service;
     }
 
     public function servWithEmp(): array

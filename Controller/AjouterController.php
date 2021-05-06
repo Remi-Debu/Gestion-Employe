@@ -118,8 +118,8 @@ if (isset($_SESSION["admin"])) {
 
                 $dataSelectNoserv = (new ServiceService())->displayServ();
 
-                for ($i = 0; $i < count($dataSelectNoserv); $i++) {
-                    if ($dataSelectNoserv[$i][0] == $_POST["noserv"]) {
+                foreach ($dataSelectNoserv as $key => $value) {
+                    if ($dataSelectNoserv[$key]->getNoserv() == $_POST["noserv"]) {
                         $erreur = true;
                         $message[] = "*Erreur N° Service existant";
                     }

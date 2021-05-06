@@ -36,8 +36,8 @@ if (isset($_SESSION["admin"])) {
     afficherTableEmploye($dataDisplayEmp, $dataSup);
 
     // PARTIE SERVICES
-    $dataServices = (new ServiceService())->displayServ();
-    afficherTableService($dataServices, $dataServWithEmp);
+    $dataService = (new ServiceService())->displayServ();
+    afficherTableService($dataService, $dataServWithEmp);
 
     // FOOTER
     afficherFooter();
@@ -82,15 +82,13 @@ function connexion(): bool
 
         $data = (new UtilisateurService())->selectUser($identifiant);
 
-        if (isset($data[0][2])) {
-            $verif_data = $data[0][2];
+        if (null !== $data[0]->getMdp()) {
+            $verif_data = $data[0]->getMdp();
             $verif_mdp = password_verify($mdp, $verif_data);
 
             if ($verif_mdp == true) {
                 session_start();
                 (new UtilisateurService())->session($identifiant, $data);
-                //$_SESSION["ident"] = $identifiant;
-                //$_SESSION["admin"] = $data[0][3];
             } else {
                 $erreur_co = true;
             }
