@@ -5,9 +5,6 @@ include_once(__DIR__ . "/../Service/EmployeService.php");
 include_once(__DIR__ . "/../Service/ServiceService.php");
 include_once(__DIR__ . "/../Service/UtilisateurService.php");
 
-$title = "Accueil";
-htmlhead($title);
-
 // GESTION DES POSTS
 $erreur_insc = false;
 $erreur_co = false;
@@ -19,7 +16,10 @@ if (!empty($_POST)) {
         $erreur_co = connexion();
     }
     if (isset($_POST["deconnexion"])) {
-        (new UtilisateurService())->deconnexion();
+        session_start();
+        session_destroy();
+        header("location: /Controller/AccueilController.php");
+        exit();
     }
 }
 
@@ -36,8 +36,12 @@ if (isset($_SESSION["admin"])) {
     afficherTableEmploye($dataDisplayEmp, $dataSup);
 
     // PARTIE SERVICES
-    $dataService = (new ServiceService())->displayServ();
-    afficherTableService($dataService, $dataServWithEmp);
+    try {
+        $dataService = (new ServiceService())->displayServ();
+        afficherTableService($dataService, $dataServWithEmp);
+    } catch (ServiceServiceException $e) {
+        afficherTableService(null, $e->getMessage());
+    }
 
     // FOOTER
     afficherFooter();

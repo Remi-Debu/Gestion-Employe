@@ -1,11 +1,17 @@
 <?php
 include_once(__DIR__ . "/../DAO/ServiceDAO.php");
+//require_once(__DIR__ . "/../Exception/ServiceDAOException.php");
+require_once(__DIR__ . "/../Exception/ServiceServiceException.php");
 
 class ServiceService
 {
     public function displayServ(): array
     {
-        $data = (new ServiceDAO())->displayServ();
+        try {
+            $data = (new ServiceDAO())->displayServ();
+        } catch (ServiceDAOException $e) {
+            throw new ServiceServiceException($e->getCode(), $e->getMessage());
+        }
         return $data;
     }
 

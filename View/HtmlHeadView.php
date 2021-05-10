@@ -2,8 +2,6 @@
 function htmlhead(string $title): void
 {
 ?>
-    <!DOCTYPE html>
-    <html lang="en">
 
     <head>
         <meta charset="UTF-8">
@@ -13,6 +11,7 @@ function htmlhead(string $title): void
         <link rel="stylesheet" href="/Style/GestionEmploye.css">
         <title><?php echo $title ?></title>
     </head>
+
 <?php
 }
 ?>

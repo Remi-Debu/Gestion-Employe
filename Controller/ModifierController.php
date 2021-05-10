@@ -64,18 +64,18 @@ if (isset($_SESSION["admin"])) {
             }
 
             $dataDisplayEmp = (new EmployeService())->displayEmpModif();
-            foreach ($dataDisplayEmp as $key => $value) {
-                if ($_GET['noemp'] == $dataDisplayEmp[$key][0]->getNoemp()) {
-                    $preselec_noemp = $dataDisplayEmp[$key][0]->getNoemp();
-                    $preselec_nom = $dataDisplayEmp[$key][0]->getNom();
-                    $preselec_prenom = $dataDisplayEmp[$key][0]->getPrenom();
-                    $preselec_emploi = $dataDisplayEmp[$key][0]->getEmploi();
-                    $preselec_superieur = $dataDisplayEmp[$key][1];
-                    $preselec_embauche = $dataDisplayEmp[$key][0]->getEmbauche();
-                    $preselec_sal = $dataDisplayEmp[$key][0]->getSal();
-                    $preselec_comm = $dataDisplayEmp[$key][0]->getComm();
-                    $preselec_service = $dataDisplayEmp[$key][0]->getService()->getService();
-                    $preselec_sup = $dataDisplayEmp[$key][0]->getSup();
+            foreach ($dataDisplayEmp as $value) {
+                if ($_GET['noemp'] == $value->getNoemp()) {
+                    $preselec_noemp = $value->getNoemp();
+                    $preselec_nom = $value->getNom();
+                    $preselec_prenom = $value->getPrenom();
+                    $preselec_emploi = $value->getEmploi();
+                    $preselec_superieur = $value->getSuperieur()->getNom() . " " . $value->getSuperieur()->getPrenom();
+                    $preselec_embauche = $value->getEmbauche();
+                    $preselec_sal = $value->getSal();
+                    $preselec_comm = $value->getComm();
+                    $preselec_service = $value->getService()->getService();
+                    $preselec_sup = $value->getSup();
                 }
             }
             $message[] = NULL;
@@ -116,11 +116,11 @@ if (isset($_SESSION["admin"])) {
                 }
             }
             $dataDisplayServ = (new ServiceService())->displayServ();
-            foreach ($dataDisplayServ as $key => $value) {
-                if ($_GET['noserv'] == $dataDisplayServ[$key]->getNoserv()) {
-                    $preselec_noserv = $dataDisplayServ[$key]->getNoserv();
-                    $preselec_service = $dataDisplayServ[$key]->getService();
-                    $preselec_ville = $dataDisplayServ[$key]->getVille();
+            foreach ($dataDisplayServ as $value) {
+                if ($_GET['noserv'] == $value->getNoserv()) {
+                    $preselec_noserv = $value->getNoserv();
+                    $preselec_service = $value->getService();
+                    $preselec_ville = $value->getVille();
                 }
             }
             $message[] = NULL;

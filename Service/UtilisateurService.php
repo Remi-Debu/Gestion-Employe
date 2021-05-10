@@ -21,12 +21,4 @@ class UtilisateurService
         $_SESSION["admin"] = $data[0]->getAdmin();
         (new Utilisateur())->setNom($_SESSION["ident"])->setAdmin($_SESSION["admin"]);
     }
-
-    function deconnexion()
-    {
-        session_start();
-        session_destroy();
-        header("location: /Controller/AccueilController.php");
-        exit();
-    }
 }

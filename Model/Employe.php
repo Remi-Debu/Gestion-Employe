@@ -11,6 +11,7 @@ class Employe
     private $comm;
     private $ajout;
     private Service $service;
+    private Employe $superieur;
 
     /**
      * Get the value of noemp
@@ -208,6 +209,26 @@ class Employe
     public function setService($service)
     {
         $this->service = $service;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of superieur
+     */ 
+    public function getSuperieur()
+    {
+        return $this->superieur;
+    }
+
+    /**
+     * Set the value of superieur
+     *
+     * @return  self
+     */ 
+    public function setSuperieur($superieur)
+    {
+        $this->superieur = $superieur;
 
         return $this;
     }

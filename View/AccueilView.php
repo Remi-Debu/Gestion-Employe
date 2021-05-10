@@ -3,6 +3,12 @@ function accueilHeader(bool $erreur_insc, bool $erreur_co): void
 {
 ?>
 
+    <!DOCTYPE html>
+    <html lang="en">
+    <?php 
+    $title = "Accueil";
+    HTMLHead($title);
+    ?>
     <body>
         <header>
             <div class="container-fluid">
@@ -115,7 +121,6 @@ function accueilHeader(bool $erreur_insc, bool $erreur_co): void
 
     </body>
 
-    </html>
 <?php
 }
 ?>
@@ -168,25 +173,25 @@ function afficherTableEmploye(array $dataDisplayEmp, array $dataSup): void
                             </thead>
 
                             <?php
-                            foreach ($dataDisplayEmp as $key => $value) {
+                            foreach ($dataDisplayEmp as $value) {
                                 $displayRemove = false;
-                                if ($dataDisplayEmp[$key][0]->getSup() == NULL) {
-                                    $dataDisplayEmp[$key][1] = "═════════";
+                                if ($value->getSup() == NULL) {
+                                    $value->setSuperieur((new Employe())->setNom("═════════"));
                                 }
-                                $get_noemp = $dataDisplayEmp[$key][0]->getNoemp();
-                                echo "<tr><td>" . $dataDisplayEmp[$key][0]->getNom() . "</td>";
-                                echo "<td>" . $dataDisplayEmp[$key][0]->getPrenom() . "</td>";
-                                echo "<td>" . $dataDisplayEmp[$key][0]->getEmploi() . "</td>";
-                                echo "<td>" . $dataDisplayEmp[$key][1] . "</td>";
-                                echo "<td>" . $dataDisplayEmp[$key][0]->getService()->getNoserv() . "</td>";
-                                echo "<td>" . $dataDisplayEmp[$key][0]->getService()->getService() . "</td>";
+                                $get_noemp = $value->getNoemp();
+                                echo "<tr><td>" . $value->getNom() . "</td>";
+                                echo "<td>" . $value->getPrenom() . "</td>";
+                                echo "<td>" . $value->getEmploi() . "</td>";
+                                echo "<td>" . $value->getSuperieur()->getNom() . " " . $value->getSuperieur()->getPrenom() . "</td>";
+                                echo "<td>" . $value->getService()->getNoserv() . "</td>";
+                                echo "<td>" . $value->getService()->getService() . "</td>";
                                 if (isset($_SESSION["admin"])) {
                                     if ($_SESSION["admin"] == "Y") {
                                         echo "<td><a href='DetailsController.php?noemp=$get_noemp'><button class='btn btn-info btn-sm'>Détails</button></a></td>";
                                         echo "<td><a href='ModifierController.php?noemp=$get_noemp'><button class='btn btn-warning btn-sm'>Modifier</button></a></td>";
 
                                         for ($j = 0; $j < count($dataSup); $j++) {
-                                            if ($dataDisplayEmp[$key][0]->getNoemp() == $dataSup[$j][0]) {
+                                            if ($value->getNoemp() == $dataSup[$j][0]) {
                                                 $displayRemove = true;
                                             }
                                         }
@@ -208,13 +213,12 @@ function afficherTableEmploye(array $dataDisplayEmp, array $dataSup): void
                 </div>
     </body>
 
-    </html>
 <?php
 }
 ?>
 
 <?php
-function afficherTableService(array $dataService, array $dataServWithEmp): void
+function afficherTableService(?array $dataService, ?array $dataServWithEmp): void
 {
 ?>
 
@@ -256,19 +260,19 @@ function afficherTableService(array $dataService, array $dataServWithEmp): void
                     </thead>
 
                     <?php
-                    foreach ($dataService as $key => $value) {
+                    foreach ($dataService as $value) {
                         $displayRemove = false;
-                        $get_noserv = $dataService[$key]->getNoserv();
-                        echo "<tr><td>" . $dataService[$key]->getNoserv() . "</td>";
-                        echo "<td>" . $dataService[$key]->getService() . "</td>";
-                        echo "<td>" . $dataService[$key]->getVille() . "</td>";
+                        $get_noserv = $value->getNoserv();
+                        echo "<tr><td>" . $value->getNoserv() . "</td>";
+                        echo "<td>" . $value->getService() . "</td>";
+                        echo "<td>" . $value->getVille() . "</td>";
 
                         if (isset($_SESSION["admin"])) {
                             if ($_SESSION["admin"] == "Y") {
                                 echo "<td><a href='DetailsController.php?noserv=$get_noserv'><button class='btn btn-info btn-sm'>Détails</button></a></td>";
                                 echo "<td><a href='ModifierController.php?noserv=$get_noserv'><button class='btn btn-warning btn-sm'>Modifier</button></a></td>";
                                 for ($j = 0; $j < count($dataServWithEmp); $j++) {
-                                    if ($dataService[$key]->getNoserv() == $dataServWithEmp[$j][0]) {
+                                    if ($value->getNoserv() == $dataServWithEmp[$j][0]) {
                                         $displayRemove = true;
                                     }
                                 }
@@ -292,7 +296,6 @@ function afficherTableService(array $dataService, array $dataServWithEmp): void
         </div>
     </body>
 
-    </html>
 <?php
 }
 ?>
@@ -313,7 +316,6 @@ function afficherFooter(): void
         </footer>
     </body>
 
-    </html>
 <?php
 }
 ?>

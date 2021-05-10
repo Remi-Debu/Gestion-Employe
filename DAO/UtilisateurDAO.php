@@ -1,11 +1,12 @@
 <?php
 include_once(__DIR__ . "/../Model/Utilisateur.php");
+include_once(__DIR__ . "/../DAO/CommonDAO.php");
 
-class UtilisateurDAO
+class UtilisateurDAO extends CommonDAO
 {
     public function addUser(string $identifiant, string $hashed_mdp): void
     {
-        $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
+        $bdd = $this->connexion();
         $stmt = $bdd->prepare("INSERT INTO utilisateurs (nom, mdp) VALUES (?, ?);");
         $stmt->bind_param("ss", $identifiant, $hashed_mdp);
         $stmt->execute();
@@ -14,18 +15,18 @@ class UtilisateurDAO
 
     public function selectUser(string $identifiant): array
     {
-        $bdd = new mysqli("127.0.0.1", "admin", "admin", "emp_serv");
+        $bdd = $this->connexion();
         $stmt = $bdd->prepare("SELECT * FROM utilisateurs WHERE nom = ?;");
         $stmt->bind_param("s", $identifiant);
         $stmt->execute();
         $rs = $stmt->get_result();
-        $data = $rs->fetch_all(MYSQLI_NUM);
-        foreach ($data as $key => $value) {
-            $utilisateur[$key] = (new Utilisateur())
-                ->setId($data[$key][0])
-                ->setNom($data[$key][1])
-                ->setMdp($data[$key][2])
-                ->setAdmin($data[$key][3]);
+        $data = $rs->fetch_all(MYSQLI_ASSOC);
+        foreach ($data as $value) {
+            $utilisateur[] = (new Utilisateur())
+                ->setId($value["id"])
+                ->setNom($value["nom"])
+                ->setMdp($value["mdp"])
+                ->setAdmin($value["admin"]);
         }
         $rs->free();
         $bdd->close();
