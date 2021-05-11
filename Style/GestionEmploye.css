@@ -232,3 +232,8 @@ table {
     top: 5em;
     height: 5em;
 }
+
+.erreur {
+    position: relative;
+    top: 50px;
+}

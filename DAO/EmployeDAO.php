@@ -1,6 +1,6 @@
 <?php
-include_once(__DIR__ . "/../Model/Employe.php");
-include_once(__DIR__ . "/../DAO/CommonDAO.php");
+include_once("../Model/Employe.php");
+include_once("../DAO/CommonDAO.php");
 
 class EmployeDAO extends CommonDAO
 {

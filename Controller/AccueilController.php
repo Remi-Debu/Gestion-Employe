@@ -1,9 +1,10 @@
 <?php
-include_once(__DIR__ . "/../View/HtmlHeadView.php");
-include_once(__DIR__ . "/../View/AccueilView.php");
-include_once(__DIR__ . "/../Service/EmployeService.php");
-include_once(__DIR__ . "/../Service/ServiceService.php");
-include_once(__DIR__ . "/../Service/UtilisateurService.php");
+include_once("../View/HtmlHeadView.php");
+include_once("../View/AccueilView.php");
+include_once("../Service/EmployeService.php");
+include_once("../Service/ServiceService.php");
+include_once("../Service/UtilisateurService.php");
+require_once("../Exception/ServiceServiceException.php");
 
 // GESTION DES POSTS
 $erreur_insc = false;
@@ -18,7 +19,7 @@ if (!empty($_POST)) {
     if (isset($_POST["deconnexion"])) {
         session_start();
         session_destroy();
-        header("location: /Controller/AccueilController.php");
+        header("location: /gestion-employe/Controller/AccueilController.php");
         exit();
     }
 }
@@ -31,16 +32,15 @@ if (isset($_SESSION["admin"])) {
     // PARTIE EMPLOYÉS
     $dataDisplayEmp = (new EmployeService())->displayEmp();
     $dataSup = (new EmployeService())->sup();
-    $dataServWithEmp = (new ServiceService())->servWithEmp();
-
     afficherTableEmploye($dataDisplayEmp, $dataSup);
 
     // PARTIE SERVICES
     try {
         $dataService = (new ServiceService())->displayServ();
-        afficherTableService($dataService, $dataServWithEmp);
+        $dataServWithEmp = (new ServiceService())->servWithEmp();
+        afficherTableService($dataService, $dataServWithEmp, null);
     } catch (ServiceServiceException $e) {
-        afficherTableService(null, $e->getMessage());
+        afficherTableService(null, null, $e->getCode(), $e->getMessage());
     }
 
     // FOOTER

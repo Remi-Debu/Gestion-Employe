@@ -1,8 +1,8 @@
 <?php
-include_once(__DIR__ . "/../View/HtmlHeadView.php");
-include_once(__DIR__ . "/../View/ModifierView.php");
-include_once(__DIR__ . "/../Service/EmployeService.php");
-include_once(__DIR__ . "/../Service/ServiceService.php");
+include_once("../View/HtmlHeadView.php");
+include_once("../View/ModifierView.php");
+include_once("../Service/EmployeService.php");
+include_once("../Service/ServiceService.php");
 
 $title = "Modification";
 htmlhead($title);
@@ -59,7 +59,7 @@ if (isset($_SESSION["admin"])) {
                         $comm = NULL;
                         (new EmployeService())->updateComm($employe);
                     }
-                    header("Location: /Controller/AccueilController.php");
+                    header("Location: /gestion-employe/Controller/AccueilController.php");
                 }
             }
 
@@ -112,7 +112,7 @@ if (isset($_SESSION["admin"])) {
                 if ($erreur == false) {
                     $service = (new Service())->setNoserv($_POST["noserv"])->setService($_POST["service"])->setVille($_POST["ville"]);
                     (new ServiceService())->updateServ($service);
-                    header("Location: /Controller/AccueilController.php");
+                    header("Location: /gestion-employe/Controller/AccueilController.php");
                 }
             }
             $dataDisplayServ = (new ServiceService())->displayServ();
@@ -133,8 +133,8 @@ if (isset($_SESSION["admin"])) {
             );
         }
     } else {
-        header("location: /Controller/AccueilController.php");
+        header("location: /gestion-employe/Controller/AccueilController.php");
     }
 } else {
-    header("location: /Controller/AccueilController.php");
+    header("location: /gestion-employe/Controller/AccueilController.php");
 }

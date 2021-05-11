@@ -1,7 +1,7 @@
 <?php
-include_once(__DIR__ . "/../DAO/ServiceDAO.php");
-//require_once(__DIR__ . "/../Exception/ServiceDAOException.php");
-require_once(__DIR__ . "/../Exception/ServiceServiceException.php");
+include_once("../DAO/ServiceDAO.php");
+require_once("../Exception/ServiceDAOException.php");
+require_once("../Exception/ServiceServiceException.php");
 
 class ServiceService
 {
@@ -10,35 +10,57 @@ class ServiceService
         try {
             $data = (new ServiceDAO())->displayServ();
         } catch (ServiceDAOException $e) {
-            throw new ServiceServiceException($e->getCode(), $e->getMessage());
+            $message = $e->getMessage();
+            $code = $e->getCode();
+            throw new ServiceServiceException($message, $code);
         }
         return $data;
     }
 
     public function servWithEmp(): array
     {
-        $data = (new ServiceDAO())->servWithEmp();
+        try {
+            $data = (new ServiceDAO())->servWithEmp();
+        } catch (ServiceDAOException $e) {
+            new ServiceServiceException($e->getCode(), $e->getMessage());
+        }
         return $data;
     }
 
     public function counterServ(): array
     {
-        $data = (new ServiceDAO())->counterServ();
+        try {
+            $data = (new ServiceDAO())->counterServ();
+        } catch (ServiceDAOException $e) {
+            new ServiceServiceException($e->getCode(), $e->getMessage());
+        }
         return $data;
     }
 
     public function addServ(Service $service): void
     {
-        (new ServiceDAO())->addServ($service);
+        try {
+            (new ServiceDAO())->addServ($service);
+        } catch (ServiceDAOException $e) {
+            new ServiceServiceException($e->getCode(), $e->getMessage());
+        }
     }
 
     public function updateServ(Service $service): void
     {
-        (new ServiceDAO())->updateServ($service);
+        try {
+            (new ServiceDAO())->updateServ($service);
+        } catch (ServiceDAOException $e) {
+            new ServiceServiceException($e->getCode(), $e->getMessage());
+        }
     }
 
     public function deleteServ(int $noserv): void
     {
-        (new ServiceDAO())->deleteServ($noserv);
+        try {
+            (new ServiceDAO())->deleteServ($noserv);
+        } catch (ServiceDAOException $e) {
+            new ServiceServiceException($e->getCode(), $e->getMessage());
+        }
     }
 }

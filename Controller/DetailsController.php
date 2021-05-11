@@ -1,8 +1,8 @@
 <?php
-include_once(__DIR__ . "/../View/HtmlHeadView.php");
-include_once(__DIR__ . "/../View/DetailsView.php");
-include_once(__DIR__ . "/../Service/EmployeService.php");
-include_once(__DIR__ . "/../Service/ServiceService.php");
+include_once("../View/HtmlHeadView.php");
+include_once("../View/DetailsView.php");
+include_once("../Service/EmployeService.php");
+include_once("../Service/ServiceService.php");
 
 $title = "Détails";
 htmlhead($title);
@@ -40,8 +40,8 @@ if (isset($_SESSION["admin"])) {
             formulaireServiceDetails($preselec_noserv, $preselec_service, $preselec_ville);
         }
     } else {
-        header("location: /Controller/AccueilController.php");
+        header("location: /gestion-employe/Controller/AccueilController.php");
     }
 } else {
-    header("location: /Controller/AccueilController.php");
+    header("location: /gestion-employe/Controller/AccueilController.php");
 }

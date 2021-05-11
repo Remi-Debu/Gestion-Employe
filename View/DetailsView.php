@@ -62,7 +62,7 @@ function formulaireEmployeDetails(
                         <br>
                         <input id='noServ' type='number' class='form-control' name='noserv' value=<?php echo $preselec_noserv ?> disabled>
 
-                        <a href='/Controller/AccueilController.php'><button class='btn btn-primary btn-lg'>Page d'Accueil</button></a>
+                        <a href='/gestion-employe/Controller/AccueilController.php'><button class='btn btn-primary btn-lg'>Page d'Accueil</button></a>
                     </div>
                 </div>
             </div>
@@ -99,7 +99,7 @@ function formulaireServiceDetails(int $preselec_noserv, string $preselec_service
                         <br>
                         <input id='ville' type='text' class='form-control' name='ville' value=<?php echo $preselec_ville ?> disabled>
 
-                        <a href='/Controller/AccueilController.php'><button class='btn btn-primary btn-lg'>Page d'Accueil</button></a>
+                        <a href='/gestion-employe/Controller/AccueilController.php'><button class='btn btn-primary btn-lg'>Page d'Accueil</button></a>
                     </div>
                 </div>
             </div>

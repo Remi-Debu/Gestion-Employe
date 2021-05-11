@@ -1,8 +1,8 @@
 <?php
-include_once(__DIR__ . "/../View/HtmlHeadView.php");
-include_once(__DIR__ . "/../View/AjouterView.php");
-include_once(__DIR__ . "/../Service/EmployeService.php");
-include_once(__DIR__ . "/../Service/ServiceService.php");
+include_once("../View/HtmlHeadView.php");
+include_once("../View/AjouterView.php");
+include_once("../Service/EmployeService.php");
+include_once("../Service/ServiceService.php");
 
 $title = "Ajouter";
 htmlhead($title);
@@ -94,7 +94,7 @@ if (isset($_SESSION["admin"])) {
                         $employe->setComm(NULL);
                         (new EmployeService())->updateComm($employe);
                     }
-                    header("Location: /Controller/AccueilController.php");
+                    header("Location: /gestion-employe/Controller/AccueilController.php");
                 }
             }
             $message[] = NULL;
@@ -130,16 +130,16 @@ if (isset($_SESSION["admin"])) {
 
                     $service = (new Service())->setNoserv($_POST["noserv"])->setService($_POST["service"])->setVille($_POST["ville"])->setAjout($ajout);
                     (new ServiceService())->addServ($service);
-                    header("Location: /Controller/AccueilController.php");
+                    header("Location: /gestion-employe/Controller/AccueilController.php");
                 }
             }
             $message[] = NULL;
             formulaireServiceAjouter($erreur, $message);
         }
     } else {
-        header("location: /Controller/AccueilController.php");
+        header("location: /gestion-employe/Controller/AccueilController.php");
     }
 } else {
-    header("location: /Controller/AccueilController.php");
+    header("location: /gestion-employe/Controller/AccueilController.php");
 }
 ?>

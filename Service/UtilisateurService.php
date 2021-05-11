@@ -1,5 +1,5 @@
 <?php
-include_once(__DIR__ . "/../DAO/UtilisateurDAO.php");
+include_once("../DAO/UtilisateurDAO.php");
 
 class UtilisateurService
 {

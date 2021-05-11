@@ -55,7 +55,7 @@ function formulaireEmployeSupprimer(
                             <input type='submit' class='btn btn-danger btn-sm' name='supprimer' value='Supprimer'>
                         </form>
 
-                        <a href='/Controller/AccueilController.php'><button class='btn btn-primary btn-lg'>Page d'Accueil</button></a>
+                        <a href='/gestion-employe/Controller/AccueilController.php'><button class='btn btn-primary btn-lg'>Page d'Accueil</button></a>
                     </div>
                 </div>
             </div>
@@ -100,7 +100,7 @@ function formulaireServiceSupprimer(
                             <input type='submit' class='btn btn-danger btn-sm' name='supprimer' value='Supprimer'>
                         </form>
 
-                        <a href='/Controller/AccueilController.php'><button class='btn btn-primary btn-lg'>Page d'Accueil</button></a>
+                        <a href='/gestion-employe/Controller/AccueilController.php'><button class='btn btn-primary btn-lg'>Page d'Accueil</button></a>
                     </div>
                 </div>
             </div>

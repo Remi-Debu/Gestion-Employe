@@ -92,7 +92,7 @@ function formulaireEmployeModifier(
                             <input type='reset' class='btn btn-warning btn-sm' value='Réinitialiser'>
                         </form>
 
-                        <a href='/Controller/AccueilController.php'><button class='btn btn-primary btn-lg'>Page d'Accueil</button></a>
+                        <a href='/gestion-employe/Controller/AccueilController.php'><button class='btn btn-primary btn-lg'>Page d'Accueil</button></a>
                     </div>
                 </div>
             </div>
@@ -155,7 +155,7 @@ function formulaireServiceModifier(
                             <input type='reset' class='btn btn-warning btn-sm' value='Réinitialiser'>
                         </form>
 
-                        <a href='/Controller/AccueilController.php'><button class='btn btn-primary btn-lg'>Page d'Accueil</button></a>
+                        <a href='/gestion-employe/Controller/AccueilController.php'><button class='btn btn-primary btn-lg'>Page d'Accueil</button></a>
                     </div>
                 </div>
             </div>

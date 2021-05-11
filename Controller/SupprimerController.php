@@ -1,8 +1,8 @@
 <?php
-include_once(__DIR__ . "/../View/HtmlHeadView.php");
-include_once(__DIR__ . "/../View/SupprimerView.php");
-include_once(__DIR__ . "/../Service/EmployeService.php");
-include_once(__DIR__ . "/../Service/ServiceService.php");
+include_once("../View/HtmlHeadView.php");
+include_once("../View/SupprimerView.php");
+include_once("../Service/EmployeService.php");
+include_once("../Service/ServiceService.php");
 
 $title = "Suppression";
 htmlhead($title);
@@ -14,7 +14,7 @@ if (isset($_SESSION["admin"])) {
             if (isset($_POST["noemp"])) {
                 $noemp = $_POST["noemp"];
                 (new EmployeService())->deleteEmp($noemp);
-                header("Location: /Controller/AccueilController.php");
+                header("Location: /gestion-employe/Controller/AccueilController.php");
             }
 
             $dataDisplayEmp = (new EmployeService())->displayEmpSupp();
@@ -46,7 +46,7 @@ if (isset($_SESSION["admin"])) {
             if (isset($_POST["noserv"])) {
                 $noserv = $_POST["noserv"];
                 (new ServiceService())->deleteServ($noserv);
-                header("Location: /Controller/AccueilController.php");
+                header("Location: /gestion-employe/Controller/AccueilController.php");
             }
 
             $dataDisplayServ = (new ServiceService())->displayServ();
@@ -60,10 +60,10 @@ if (isset($_SESSION["admin"])) {
             formulaireServiceSupprimer($preselec_noserv, $preselec_service, $preselec_ville);
         }
     } else {
-        header("location: /Controller/AccueilController.php");
+        header("location: /gestion-employe/Controller/AccueilController.php");
     }
 } else {
-    header("location: /Controller/AccueilController.php");
+    header("location: /gestion-employe/Controller/AccueilController.php");
 }
 ?>
 </body>
