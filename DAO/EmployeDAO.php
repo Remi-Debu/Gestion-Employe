@@ -1,19 +1,29 @@
 <?php
 include_once("../Model/Employe.php");
 include_once("../DAO/CommonDAO.php");
+require_once("../Exception/EmployeDAOException.php");
 
 class EmployeDAO extends CommonDAO
 {
     public function displayEmp(): array
     {
-        $bdd = $this->connexion();
-        $stmt = $bdd->prepare("SELECT e.noemp, e.nom, e.prenom, e.emploi, e2.nom as 'nomsup', e2.prenom as 'prenomsup', e.noserv, s.service, e.sup FROM employes AS e
+        mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+        try {
+            $bdd = $this->connexion();
+            $stmt = $bdd->prepare("SELECT e.noemp, e.nom, e.prenom, e.emploi, e2.nom as 'nomsup', e2.prenom as 'prenomsup', e.noserv, s.service, e.sup FROM employes AS e
                                INNER JOIN services AS s on e.noserv = s.noserv
                                INNER JOIN employes AS e2 on e.sup = e2.noemp OR e.sup IS NULL
                                GROUP BY noemp ORDER BY e.noserv, e.noemp ASC;");
-        $stmt->execute();
-        $rs = $stmt->get_result();
-        $data = $rs->fetch_all(MYSQLI_ASSOC);
+            $stmt->execute();
+            $rs = $stmt->get_result();
+            $data = $rs->fetch_all(MYSQLI_ASSOC);
+            $rs->free();
+            $bdd->close();
+        } catch (mysqli_sql_exception $e) {
+            $message = $e->getMessage();
+            $code = $e->getCode();
+            throw new EmployeDAOException($message, $code);
+        }
         foreach ($data as $value) {
             $employe[] = (new Employe())
                 ->setNoemp($value['noemp'])
@@ -24,8 +34,6 @@ class EmployeDAO extends CommonDAO
                 ->setService((new Service())->setNoserv($value['noserv'])->setService($value['service']))
                 ->setSup($value['sup']);
         }
-        $rs->free();
-        $bdd->close();
         return $employe;
     }
 

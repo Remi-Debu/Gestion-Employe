@@ -142,4 +142,3 @@ if (isset($_SESSION["admin"])) {
 } else {
     header("location: /gestion-employe/Controller/AccueilController.php");
 }
-?>

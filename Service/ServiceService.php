@@ -1,7 +1,7 @@
 <?php
 include_once("../DAO/ServiceDAO.php");
-require_once("../Exception/ServiceDAOException.php");
-require_once("../Exception/ServiceServiceException.php");
+//require_once("../Exception/ServiceDAOException.php");
+//require_once("../Exception/ServiceServiceException.php");
 
 class ServiceService
 {
@@ -22,7 +22,9 @@ class ServiceService
         try {
             $data = (new ServiceDAO())->servWithEmp();
         } catch (ServiceDAOException $e) {
-            new ServiceServiceException($e->getCode(), $e->getMessage());
+            $message = $e->getMessage();
+            $code = $e->getCode();
+            throw new ServiceServiceException($message, $code);
         }
         return $data;
     }
@@ -32,7 +34,9 @@ class ServiceService
         try {
             $data = (new ServiceDAO())->counterServ();
         } catch (ServiceDAOException $e) {
-            new ServiceServiceException($e->getCode(), $e->getMessage());
+            $message = $e->getMessage();
+            $code = $e->getCode();
+            throw new ServiceServiceException($message, $code);
         }
         return $data;
     }
@@ -42,7 +46,9 @@ class ServiceService
         try {
             (new ServiceDAO())->addServ($service);
         } catch (ServiceDAOException $e) {
-            new ServiceServiceException($e->getCode(), $e->getMessage());
+            $message = $e->getMessage();
+            $code = $e->getCode();
+            throw new ServiceServiceException($message, $code);
         }
     }
 
@@ -51,7 +57,9 @@ class ServiceService
         try {
             (new ServiceDAO())->updateServ($service);
         } catch (ServiceDAOException $e) {
-            new ServiceServiceException($e->getCode(), $e->getMessage());
+            $message = $e->getMessage();
+            $code = $e->getCode();
+            throw new ServiceServiceException($message, $code);
         }
     }
 
@@ -60,7 +68,9 @@ class ServiceService
         try {
             (new ServiceDAO())->deleteServ($noserv);
         } catch (ServiceDAOException $e) {
-            new ServiceServiceException($e->getCode(), $e->getMessage());
+            $message = $e->getMessage();
+            $code = $e->getCode();
+            throw new ServiceServiceException($message, $code);
         }
     }
 }

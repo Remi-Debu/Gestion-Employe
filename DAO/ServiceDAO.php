@@ -10,7 +10,7 @@ class ServiceDAO extends CommonDAO
         mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
         try {
             $bdd = $this->connexion();
-            $stmt = $bdd->prepare("ELECT * FROM services;");
+            $stmt = $bdd->prepare("SELECT * FROM services;");
             $stmt->execute();
             $rs = $stmt->get_result();
             $data = $rs->fetch_all(MYSQLI_ASSOC);
@@ -43,7 +43,9 @@ class ServiceDAO extends CommonDAO
             $rs->free();
             $bdd->close();
         } catch (mysqli_sql_exception $e) {
-            throw new ServiceDAOException($e->getCode(), $e->getMessage());
+            $message = $e->getMessage();
+            $code = $e->getCode();
+            throw new ServiceDAOException($message, $code);
         }
         return $data;
     }
@@ -60,7 +62,9 @@ class ServiceDAO extends CommonDAO
             $rs->free();
             $bdd->close();
         } catch (mysqli_sql_exception $e) {
-            throw new ServiceDAOException($e->getCode(), $e->getMessage());
+            $message = $e->getMessage();
+            $code = $e->getCode();
+            throw new ServiceDAOException($message, $code);
         }
         return $data;
     }
@@ -80,7 +84,9 @@ class ServiceDAO extends CommonDAO
             $stmt->execute();
             $bdd->close();
         } catch (mysqli_sql_exception $e) {
-            throw new ServiceDAOException($e->getCode(), $e->getMessage());
+            $message = $e->getMessage();
+            $code = $e->getCode();
+            throw new ServiceDAOException($message, $code);
         }
     }
 
@@ -99,7 +105,9 @@ class ServiceDAO extends CommonDAO
             $stmt->execute();
             $bdd->close();
         } catch (mysqli_sql_exception $e) {
-            throw new ServiceDAOException($e->getCode(), $e->getMessage());
+            $message = $e->getMessage();
+            $code = $e->getCode();
+            throw new ServiceDAOException($message, $code);
         }
     }
 
@@ -113,7 +121,9 @@ class ServiceDAO extends CommonDAO
             $stmt->execute();
             $bdd->close();
         } catch (mysqli_sql_exception $e) {
-            throw new ServiceDAOException($e->getCode(), $e->getMessage());
+            $message = $e->getMessage();
+            $code = $e->getCode();
+            throw new ServiceDAOException($message, $code);
         }
     }
 }

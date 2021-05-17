@@ -30,9 +30,13 @@ accueilHeader($erreur_insc, $erreur_co);
 if (isset($_SESSION["admin"])) {
 
     // PARTIE EMPLOYÉS
-    $dataDisplayEmp = (new EmployeService())->displayEmp();
-    $dataSup = (new EmployeService())->sup();
-    afficherTableEmploye($dataDisplayEmp, $dataSup);
+    try {
+        $dataDisplayEmp = (new EmployeService())->displayEmp();
+        $dataSup = (new EmployeService())->sup();
+        afficherTableEmploye($dataDisplayEmp, $dataSup, NULL, NULL);
+    } catch (EmployeServiceException $e) {
+        afficherTableEmploye(NULL, NULL, $e->getCode(), $e->getMessage());
+    }
 
     // PARTIE SERVICES
     try {

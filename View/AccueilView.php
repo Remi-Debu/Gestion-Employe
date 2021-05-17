@@ -15,7 +15,7 @@ function accueilHeader(bool $erreur_insc, bool $erreur_co): void
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-lg-4">
-                        <a href="/Style/Logo.png"><img src="/Gestion-Employe/Style/Logo.png" alt="Accueil"></a>
+                        <a href="/Style/Employes-et-services-unscreen.gif"><img class="logo" src="/Gestion-Employe/Style/Employes-et-services-unscreen.gif" alt="Accueil"></a>
                         <audio controls loop src="/Gestion-Employe/Style/StarWars.mp3">ERROR</audio>
                     </div>
                     <div class="col-lg-8">
@@ -127,88 +127,96 @@ function accueilHeader(bool $erreur_insc, bool $erreur_co): void
 ?>
 
 <?php
-function afficherTableEmploye(array $dataDisplayEmp, array $dataSup): void
+function afficherTableEmploye(?array $dataDisplayEmp, ?array $dataSup, ?int $code, ?string $message): void
 {
 ?>
 
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-7">
-                <div class="table_emp">
-                    <table class="table table-striped table-dark table-hover">
-                        <legend>EMPLOYÉS
-                            <?php
-                            if (isset($_SESSION["admin"])) {
-                                if ($_SESSION["admin"] == "Y") {
-                            ?>
-                                    <a href='AjouterController.php?noemp=$get_noemp'><button class='btn btn-success btn-sm btn-ajout'>+</button></a>
-                            <?php
-                                }
-                            }
-                            ?>
-                            <span class="counter">
-                                <?php
-                                $dataAddCounterEmp = (new EmployeService())->counterEmp();
-                                echo $dataAddCounterEmp[0][0];
-                                ?>
-                            </span>
-                        </legend>
-                        <hr>
-                        <thead class="table-dark" style="font-size: 1.5rem;">
-                            <tr>
-                                <th>Nom</th>
-                                <th>Prénom</th>
-                                <th>Emploi</th>
-                                <th>Supérieur</th>
-                                <th>N° Serv</th>
-                                <th>Service</th>
+                <div class="rounded table_emp" style="background-color: #ffffffaa; padding: 10px;">
+                    <?php
+                    if ($message) {
+                        echo "<div class='erreur'> " . $code . "<br>" . $message . "</div>";
+                    } elseif ($dataDisplayEmp != null) {
+                    ?>
+                        <table class="table table-striped table-dark table-hover">
+                            <legend>EMPLOYÉS
                                 <?php
                                 if (isset($_SESSION["admin"])) {
                                     if ($_SESSION["admin"] == "Y") {
-                                        echo "<th></th><th></th><th></th>";
+                                ?>
+                                        <a href='AjouterController.php?noemp=$get_noemp'><button class='btn btn-success btn-sm btn-ajout'>+</button></a>
+                                <?php
                                     }
                                 }
                                 ?>
-                            </tr>
-                        </thead>
-
-                        <?php
-                        foreach ($dataDisplayEmp as $value) {
-                            $displayRemove = false;
-                            if ($value->getSup() == NULL) {
-                                $value->setSuperieur((new Employe())->setNom("═════════"));
-                            }
-                            $get_noemp = $value->getNoemp();
-                            echo "<tr><td>" . $value->getNom() . "</td>";
-                            echo "<td>" . $value->getPrenom() . "</td>";
-                            echo "<td>" . $value->getEmploi() . "</td>";
-                            echo "<td>" . $value->getSuperieur()->getNom() . " " . $value->getSuperieur()->getPrenom() . "</td>";
-                            echo "<td>" . $value->getService()->getNoserv() . "</td>";
-                            echo "<td>" . $value->getService()->getService() . "</td>";
-                            if (isset($_SESSION["admin"])) {
-                                if ($_SESSION["admin"] == "Y") {
-                                    echo "<td><a href='DetailsController.php?noemp=$get_noemp'><button class='btn btn-info btn-sm'>Détails</button></a></td>";
-                                    echo "<td><a href='ModifierController.php?noemp=$get_noemp'><button class='btn btn-warning btn-sm'>Modifier</button></a></td>";
-
-                                    for ($j = 0; $j < count($dataSup); $j++) {
-                                        if ($value->getNoemp() == $dataSup[$j][0]) {
-                                            $displayRemove = true;
+                                <span class="counter">
+                                    <?php
+                                    $dataAddCounterEmp = (new EmployeService())->counterEmp();
+                                    echo $dataAddCounterEmp[0][0];
+                                    ?>
+                                </span>
+                            </legend>
+                            <hr>
+                            <thead class="table-dark" style="font-size: 1.5rem;">
+                                <tr>
+                                    <th>Nom</th>
+                                    <th>Prénom</th>
+                                    <th>Emploi</th>
+                                    <th>Supérieur</th>
+                                    <th>N° Serv</th>
+                                    <th>Service</th>
+                                    <?php
+                                    if (isset($_SESSION["admin"])) {
+                                        if ($_SESSION["admin"] == "Y") {
+                                            echo "<th></th><th></th><th></th>";
                                         }
                                     }
-                                    if ($displayRemove == true) {
-                                        echo "<td></td></tr>";
+                                    ?>
+                                </tr>
+                            </thead>
+
+                            <?php
+                            foreach ($dataDisplayEmp as $value) {
+                                $displayRemove = false;
+                                if ($value->getSup() == NULL) {
+                                    $value->setSuperieur((new Employe())->setNom("═════════"));
+                                }
+                                $get_noemp = $value->getNoemp();
+                                echo "<tr><td>" . $value->getNom() . "</td>";
+                                echo "<td>" . $value->getPrenom() . "</td>";
+                                echo "<td>" . $value->getEmploi() . "</td>";
+                                echo "<td>" . $value->getSuperieur()->getNom() . " " . $value->getSuperieur()->getPrenom() . "</td>";
+                                echo "<td>" . $value->getService()->getNoserv() . "</td>";
+                                echo "<td>" . $value->getService()->getService() . "</td>";
+                                if (isset($_SESSION["admin"])) {
+                                    if ($_SESSION["admin"] == "Y") {
+                                        echo "<td><a href='DetailsController.php?noemp=$get_noemp'><button class='btn btn-info btn-sm'>Détails</button></a></td>";
+                                        echo "<td><a href='ModifierController.php?noemp=$get_noemp'><button class='btn btn-warning btn-sm'>Modifier</button></a></td>";
+
+                                        for ($j = 0; $j < count($dataSup); $j++) {
+                                            if ($value->getNoemp() == $dataSup[$j][0]) {
+                                                $displayRemove = true;
+                                            }
+                                        }
+                                        if ($displayRemove == true) {
+                                            echo "<td></td></tr>";
+                                        } else {
+                                            echo "<td><a href='SupprimerController.php?noemp=$get_noemp'><button class='btn btn-danger btn-sm'>Supprimer</button></a></td></tr>";
+                                        }
                                     } else {
-                                        echo "<td><a href='SupprimerController.php?noemp=$get_noemp'><button class='btn btn-danger btn-sm'>Supprimer</button></a></td></tr>";
+                                        echo "</tr>";
                                     }
                                 } else {
                                     echo "</tr>";
                                 }
-                            } else {
-                                echo "</tr>";
                             }
-                        }
-                        ?>
-                    </table>
+                            ?>
+                        </table>
+                    <?php
+                    }
+                    ?>
                 </div>
             </div>
 
@@ -222,82 +230,84 @@ function afficherTableEmploye(array $dataDisplayEmp, array $dataSup): void
         ?>
 
             <div class="col-lg-5">
-                <?php
-                if ($message) {
-                    echo "<div class='erreur'> " . $message . "</div>";
-                } elseif ($dataService != null) {
-                ?>
-                    <div class="table_serv">
-                        <?php echo $code . " " . $message; ?>
-                        <table class="table table-striped table-dark table-hover">
-                            <legend>SERVICES
-                                <?php
-                                if (isset($_SESSION["admin"])) {
-                                    if ($_SESSION["admin"] == "Y") {
-                                ?>
-                                        <a href='AjouterController.php?noserv=$get_noserv'><button class='btn btn-success btn-sm btn-ajout'>+</button></a>
-                                <?php
-                                    }
-                                }
-                                ?>
-                                <span class="counter">
-                                    <?php
-                                    $dataAddCounterServ = (new ServiceService())->counterServ();
-                                    echo $dataAddCounterServ[0][0];
-                                    ?>
-                                </span>
-                            </legend>
-                            <hr>
-                            <thead class="table-dark" style="font-size: 1.5rem;">
-                                <tr>
-                                    <th>N° Service</th>
-                                    <th>Service</th>
-                                    <th>Ville</th>
+                <div class="rounded table_serv" style="background-color: #ffffffaa; padding: 10px;">
+                    <?php
+                    if ($message) {
+                        echo "<div class='erreur'> " . $code . "<br>" . $message . "</div>";
+                    } elseif ($dataService != null) {
+                    ?>
+                        <div class="table_serv">
+                            <?php echo $code . " " . $message; ?>
+                            <table class="table table-striped table-dark table-hover">
+                                <legend>SERVICES
                                     <?php
                                     if (isset($_SESSION["admin"])) {
                                         if ($_SESSION["admin"] == "Y") {
-                                            echo "<th></th><th></th><th></th>";
+                                    ?>
+                                            <a href='AjouterController.php?noserv=$get_noserv'><button class='btn btn-success btn-sm btn-ajout'>+</button></a>
+                                    <?php
                                         }
                                     }
                                     ?>
-                                </tr>
-                            </thead>
-
-                            <?php
-                            foreach ($dataService as $value) {
-                                $displayRemove = false;
-                                $get_noserv = $value->getNoserv();
-                                echo "<tr><td>" . $value->getNoserv() . "</td>";
-                                echo "<td>" . $value->getService() . "</td>";
-                                echo "<td>" . $value->getVille() . "</td>";
-
-                                if (isset($_SESSION["admin"])) {
-                                    if ($_SESSION["admin"] == "Y") {
-                                        echo "<td><a href='DetailsController.php?noserv=$get_noserv'><button class='btn btn-info btn-sm'>Détails</button></a></td>";
-                                        echo "<td><a href='ModifierController.php?noserv=$get_noserv'><button class='btn btn-warning btn-sm'>Modifier</button></a></td>";
-                                        for ($j = 0; $j < count($dataServWithEmp); $j++) {
-                                            if ($value->getNoserv() == $dataServWithEmp[$j][0]) {
-                                                $displayRemove = true;
+                                    <span class="counter">
+                                        <?php
+                                        $dataAddCounterServ = (new ServiceService())->counterServ();
+                                        echo $dataAddCounterServ[0][0];
+                                        ?>
+                                    </span>
+                                </legend>
+                                <hr>
+                                <thead class="table-dark" style="font-size: 1.5rem;">
+                                    <tr>
+                                        <th>N° Service</th>
+                                        <th>Service</th>
+                                        <th>Ville</th>
+                                        <?php
+                                        if (isset($_SESSION["admin"])) {
+                                            if ($_SESSION["admin"] == "Y") {
+                                                echo "<th></th><th></th><th></th>";
                                             }
                                         }
-                                        if ($displayRemove == true) {
-                                            echo "<td></td></tr>";
+                                        ?>
+                                    </tr>
+                                </thead>
+
+                                <?php
+                                foreach ($dataService as $value) {
+                                    $displayRemove = false;
+                                    $get_noserv = $value->getNoserv();
+                                    echo "<tr><td>" . $value->getNoserv() . "</td>";
+                                    echo "<td>" . $value->getService() . "</td>";
+                                    echo "<td>" . $value->getVille() . "</td>";
+
+                                    if (isset($_SESSION["admin"])) {
+                                        if ($_SESSION["admin"] == "Y") {
+                                            echo "<td><a href='DetailsController.php?noserv=$get_noserv'><button class='btn btn-info btn-sm'>Détails</button></a></td>";
+                                            echo "<td><a href='ModifierController.php?noserv=$get_noserv'><button class='btn btn-warning btn-sm'>Modifier</button></a></td>";
+                                            for ($j = 0; $j < count($dataServWithEmp); $j++) {
+                                                if ($value->getNoserv() == $dataServWithEmp[$j][0]) {
+                                                    $displayRemove = true;
+                                                }
+                                            }
+                                            if ($displayRemove == true) {
+                                                echo "<td></td></tr>";
+                                            } else {
+                                                echo "<td><a href='SupprimerController.php?noserv=$get_noserv'><button class='btn btn-danger btn-sm'>Supprimer</button></a></td></tr>";
+                                            }
                                         } else {
-                                            echo "<td><a href='SupprimerController.php?noserv=$get_noserv'><button class='btn btn-danger btn-sm'>Supprimer</button></a></td></tr>";
+                                            echo "</tr>";
                                         }
                                     } else {
                                         echo "</tr>";
                                     }
-                                } else {
-                                    echo "</tr>";
                                 }
-                            }
-                            ?>
-                        </table>
-                    </div>
-                <?php
-                }
-                ?>
+                                ?>
+                            </table>
+                        </div>
+                    <?php
+                    }
+                    ?>
+                </div>
             </div>
         </div>
     </div>

@@ -1,11 +1,19 @@
 <?php
 include_once("../DAO/EmployeDAO.php");
+require_once("../Exception/EmployeDAOException.php");
+require_once("../Exception/EmployeServiceException.php");
 
 class EmployeService
 {
     public function displayEmp(): array
     {
-        $data = (new EmployeDAO())->displayEmp();
+        try {
+            $data = (new EmployeDAO())->displayEmp();
+        } catch (EmployeDAOException $e) {
+            $message = $e->getMessage();
+            $code = $e->getCode();
+            throw new EmployeServiceException($message, $code);
+        }
         return $data;
     }
 
